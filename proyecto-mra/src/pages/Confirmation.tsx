@@ -1,7 +1,8 @@
 import { useLocation, Link, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { CheckCircle, XCircle, Clock, Package, ArrowRight } from 'lucide-react';
-import toast from 'react-hot-toast';
+import { useOrders } from "../context/OrderContext" 
+import type { Order } from '../context/OrderContext';
 
 const Confirmation = () => {
   const location = useLocation();
@@ -10,7 +11,6 @@ const Confirmation = () => {
   // 1. Leer parámetros de la URL que envía ePayco
   const searchParams = new URLSearchParams(location.search);
   const refPayco = searchParams.get('ref_payco');
-  const estado = searchParams.get('estado')?.toLowerCase() || '';
   const factura = searchParams.get('factura');
   const valor = searchParams.get('valor');
 
@@ -20,28 +20,46 @@ const Confirmation = () => {
   // 3. Determinar el estado del pago
   const [paymentStatus, setPaymentStatus] = useState<'success' | 'failed' | 'pending' | 'unknown'>('unknown');
 
+  // Ejemplo con fetch (en useEffect)
   useEffect(() => {
     if (refPayco) {
-      // Si hay ref_payco → probablemente el pago se procesó
-      if (estado.includes('aceptado') || estado.includes('aprobado')) {
-        setPaymentStatus('success');
-        toast.success('¡Pago aprobado! Tu pedido está en proceso.', { duration: 6000 });
-      } else if (estado.includes('rechazado') || estado.includes('fallido')) {
-        setPaymentStatus('failed');
-        toast.error('El pago fue rechazado. Intenta con otra tarjeta o método.', { duration: 6000 });
-      } else if (estado.includes('pendiente')) {
-        setPaymentStatus('pending');
-        toast('Tu pago está pendiente de aprobación.', { icon: '⏳', duration: 6000 });
-      } else {
-        // Si hay ref_payco pero no estado negativo → asumir éxito (común en test/redirecciones)
-        setPaymentStatus('success');
-        toast.success('¡Pago procesado! (verificación pendiente)', { duration: 5000 });
-      }
-    } else {
-      // Sin ref_payco → no vino de ePayco o canceló
-      setPaymentStatus('unknown');
+      fetch(`https://api.epayco.co/payment/${refPayco}/status`, {
+        headers: {
+          'Authorization': `Bearer 11628620157feab7331f0700c63c4c13`,
+        },
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success && data.data.estado === 'Aceptada') {
+            setPaymentStatus('success');
+          } else {
+            setPaymentStatus('failed');
+          }
+        })
+        .catch(() => setPaymentStatus('unknown'));
     }
-  }, [estado, refPayco]);
+    if (paymentStatus === 'success' && purchasedItems.length > 0) {
+    const { addOrder } = useOrders();  // importa useOrders
+
+    const newOrder: Order = {
+      id: orderNumber.toString() || `ORD-${Date.now()}`,
+      date: new Date().toLocaleString('es-CO'),
+      status: 'Pendiente',  // o 'Enviado' si quieres simular
+      total,
+      items: purchasedItems.map((item: any) => ({
+        productId: item.product.id,
+        name: item.product.name,
+        brand: item.product.brand,
+        price: item.product.price,
+        quantity: item.quantity,
+        imageUrl: item.product.imageUrl,
+      })),
+      paymentRef: refPayco || undefined,
+    };
+
+    addOrder(newOrder);
+  }
+}, [paymentStatus, purchasedItems, orderNumber, total, refPayco]);
  
   // Si no hay ni estado ni items → redirigir o mostrar vacío
   if (!refPayco && purchasedItems.length === 0) {

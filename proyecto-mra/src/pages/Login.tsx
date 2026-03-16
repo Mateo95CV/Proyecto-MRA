@@ -9,14 +9,24 @@ const Login = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
 
-const handleSubmit = (e: React.FormEvent) => {
-  e.preventDefault();
-  if (login(email, password)) {
-    navigate('/');
-  } else {
-    setError('Credenciales incorrectas');
-  }
-};
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const role = login(email, password); // ← guardamos el rol retornado
+    console.log(role)
+
+    console.log('¿Es admin?', role === 'admin');
+
+    if (role === 'admin') {
+      console.log('Redirigiendo a /admin');
+      navigate('/admin');
+    } else if (role === 'user'){
+      console.log('Redirigiendo a /');
+      navigate('/');
+    } else {
+      setError('Credenciales Invalidas')
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary-purple to-black flex items-center justify-center">

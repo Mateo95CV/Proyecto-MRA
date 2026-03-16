@@ -11,10 +11,10 @@ const Home = () => {
         <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
           <div className="text-center text-white px-6 max-w-4xl">
             <h1 className="text-5xl md:text-7xl font-bold mb-6 drop-shadow-lg">
-              Óptica Luis
+              Óptica MRA
             </h1>
             <p className="text-xl md:text-3xl mb-10 drop-shadow-md">
-              Tu visión, nuestra pasión desde Antioquia
+              Tu visión, nuestra pasión desde Rionegro, Antioquia
             </p>
             <button className="bg-primary-gold hover:bg-yellow-500 text-primary-purple px-10 py-5 rounded-full text-xl font-bold transition transform hover:scale-105">
               Ver Colección

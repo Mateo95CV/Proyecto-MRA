@@ -1,6 +1,7 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
+import type { ReactNode } from 'react'
 
-type User = { name: string; email: string } | null;
+type User = { name: string; email: string; role?: 'user' | 'admin' } | null;
 
 interface AuthContextType {
   user: User;
@@ -27,14 +28,26 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   }, []);
 
-  const login = (email: string, password: string, name: string = email.split('@')[0]) => {
-    // Simulación: en producción esto sería una llamada a API
-    // Por ahora aceptamos cualquier email/contraseña no vacíos
-    if (email && password) {
-      const userData: User = { name, email };
-      setUser(userData);
-      localStorage.setItem('user', JSON.stringify(userData));
+  const login = (email: string, password: string, name: string = email.split('@')[0]): 'admin' | 'user' | null => {
+    // Validación básica
+    if (!email || !password) {
+      console.warn('Email o contraseña vacíos');
+      return null;
     }
+
+    // Crear datos del usuario
+    const userData: User = {
+      name,
+      email,
+      role: email === 'admin@mra.com' ? 'admin' : 'user',
+    };
+
+    // Guardar en estado y localStorage
+    setUser(userData);
+    localStorage.setItem('user', JSON.stringify(userData));
+
+    // Retornar el rol para que el componente que llama sepa qué hacer
+    return userData.role;
   };
 
   const logout = () => {

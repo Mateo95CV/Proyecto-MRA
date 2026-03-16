@@ -24,7 +24,7 @@ const Navbar = () => {
         {/* Logo */}
         <Link to="/" className="flex items-center gap-3">
           {/* <img src="/logo.png" alt="Logo Óptica" className="h-10 w-auto" /> */}
-          <span className="text-2xl font-bold text-primary-purple">Óptica Luis</span>
+          <span className="text-2xl font-bold text-primary-purple">Óptica MRA</span>
         </Link>
 
         {/* Buscador */}
