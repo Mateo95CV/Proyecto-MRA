@@ -1,0 +1,13 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary-purple: #6B21A8;
+  --color-primary-gold:   #D4AF37;
+  --color-neutral-light:  #F8F8F8;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, sans-serif;
+  background-color: var(--color-neutral-light);
+}
