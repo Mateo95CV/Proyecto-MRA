@@ -1,1 +1,2 @@
 npm install react-hot-toast
+(Para reconocimiento facial)npm install @mediapipe/face_mesh @mediapipe/camera_utils @mediapipe/drawing_utils

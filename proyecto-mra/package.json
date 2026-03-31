@@ -6,13 +6,15 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "format": "prettier --write .",
+    "lint": "eslint --fix . --ext .js,.jsx,.tsx"
   },
   "dependencies": {
     "@mediapipe/camera_utils": "^0.3.1675466862",
     "@mediapipe/drawing_utils": "^0.3.1675466124",
     "@mediapipe/face_mesh": "^0.4.1633559619",
+    "@supabase/supabase-js": "^2.100.0",
     "@tailwindcss/postcss": "^4.2.1",
     "@vitejs/plugin-react": "^4.3.3",
     "lucide-react": "^0.577.0",
@@ -30,10 +32,14 @@
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "eslint": "^9.39.4",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.5.2",
     "globals": "^17.4.0",
+    "jiti": "^2.6.1",
+    "prettier": "^3.8.1",
     "typescript": "~5.9.3",
-    "typescript-eslint": "^8.56.1"
+    "typescript-eslint": "^8.57.2"
   }
 }

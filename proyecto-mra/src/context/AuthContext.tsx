@@ -1,69 +1,108 @@
+// src/context/AuthContext.tsx
+// Auth 100% con Supabase — sin localStorage manual
 import { createContext, useContext, useState, useEffect } from 'react';
-import type { ReactNode } from 'react'
+import type { ReactNode } from 'react';
+import { supabase } from '../lib/supabaseClient';
+import type { Session, User as SupabaseUser } from '@supabase/supabase-js';
 
-type User = { name: string; email: string; role?: 'user' | 'admin' } | null;
+// ── Tipo de usuario enriquecido con datos del perfil ──
+export interface AppUser {
+  id: string;
+  email: string;
+  name: string;
+  role: 'user' | 'admin';
+}
 
 interface AuthContextType {
-  user: User;
-  login: (email: string, password: string, name?: string) => void;
-  logout: () => void;
+  user: AppUser | null;
+  session: Session | null;
+  loading: boolean;
+  login: (email: string, password: string) => Promise<'admin' | 'user'>;
+  register: (email: string, password: string, name: string) => Promise<void>;
+  logout: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
-export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<User>(null);
+// ── Convierte usuario Supabase + perfil → AppUser ──
+async function buildAppUser(supaUser: SupabaseUser): Promise<AppUser> {
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('name, role')
+    .eq('id', supaUser.id)
+    .maybeSingle();
 
-  // Cargar usuario desde localStorage al iniciar la app
+  return {
+    id:    supaUser.id,
+    email: supaUser.email ?? '',
+    name:  profile?.name ?? supaUser.email?.split('@')[0] ?? '',
+    role:  (profile?.role as 'user' | 'admin') ?? 'user',
+  };
+}
+
+export const AuthProvider = ({ children }: { children: ReactNode }) => {
+  const [user,    setUser]    = useState<AppUser | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  // Escuchar cambios de sesión de Supabase (login, logout, refresh)
   useEffect(() => {
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      try {
-        const parsedUser = JSON.parse(storedUser) as User;
-        setUser(parsedUser);
-      } catch (error) {
-        console.error('Error al parsear usuario de localStorage:', error);
-        localStorage.removeItem('user');
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
+      setSession(session);
+      if (session?.user) setUser(await buildAppUser(session.user));
+      setLoading(false);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (_event, session) => {
+        setSession(session);
+        if (session?.user) {
+          setUser(await buildAppUser(session.user));
+        } else {
+          setUser(null);
+        }
       }
-    }
+    );
+
+    return () => subscription.unsubscribe();
   }, []);
 
-  const login = (email: string, password: string, name: string = email.split('@')[0]): 'admin' | 'user' | null => {
-    // Validación básica
-    if (!email || !password) {
-      console.warn('Email o contraseña vacíos');
-      return null;
-    }
+  // ── Login ─────────────────────────────────────────
+  const login = async (email: string, password: string): Promise<'admin' | 'user'> => {
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) throw error;
 
-    // Crear datos del usuario
-    const userData: User = {
-      name,
-      email,
-      role: email === 'admin@mra.com' ? 'admin' : 'user',
-    };
-
-    // Guardar en estado y localStorage
-    setUser(userData);
-    localStorage.setItem('user', JSON.stringify(userData));
-
-    // Retornar el rol para que el componente que llama sepa qué hacer
-    return userData.role;
+    const appUser = await buildAppUser(data.user);
+    setUser(appUser);
+    return appUser.role;
   };
 
-  const logout = () => {
+  // ── Registro ──────────────────────────────────────
+  const register = async (email: string, password: string, name: string): Promise<void> => {
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: { data: { name } },   // ← el trigger lo inserta en profiles
+    });
+    if (error) throw error;
+  };
+
+  // ── Logout ────────────────────────────────────────
+  const logout = async (): Promise<void> => {
+    await supabase.auth.signOut();
     setUser(null);
-    localStorage.removeItem('user');
+    setSession(null);
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user, session, loading, login, register, logout }}>
       {children}
     </AuthContext.Provider>
   );
 };
 
 export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) throw new Error('useAuth debe usarse dentro de AuthProvider');
-  return context;
+  const ctx = useContext(AuthContext);
+  if (!ctx) throw new Error('useAuth debe usarse dentro de AuthProvider');
+  return ctx;
 };

@@ -1,58 +1,38 @@
+// src/components/ProtectedRoute.tsx
 import { Navigate, Outlet } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { Loader2 } from 'lucide-react';
 
-type ProtectedRouteProps = {
-  /**
-   * Ruta a la que redirigir si no tiene acceso
-   * @default "/login"
-   */
-  redirectTo?: string;
-
-  /**
-   * Si es true, esta ruta solo es accesible si NO está logueado
-   * Ej: login, register
-   */
-  isPublic?: boolean;
-
-  /**
-   * Si se especifica, la ruta solo es accesible para usuarios con este rol
-   * Ej: 'admin' para panel de administración
-   */
+interface Props {
+  isPublic?:     boolean;   // true = solo para NO autenticados (login/register)
   requiredRole?: 'admin' | 'user';
-};
+  redirectTo?:   string;
+}
 
-const ProtectedRoute = ({
-  redirectTo = '/login',
-  isPublic = false,
-  requiredRole,
-}: ProtectedRouteProps) => {
-  const { user } = useAuth();
+const ProtectedRoute = ({ isPublic = false, requiredRole, redirectTo = '/login' }: Props) => {
+  const { user, loading } = useAuth();
 
-  // Caso 1: Rutas públicas (solo accesibles si NO está logueado)
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 size={40} className="animate-spin text-primary-purple" />
+      </div>
+    );
+  }
+
+  // Rutas públicas (login/register): redirigir si ya hay sesión
   if (isPublic) {
-    if (user) {
-      // Si ya está logueado, redirigir según su rol
-      const destination = user.role === 'admin' ? '/admin' : '/';
-      return <Navigate to={destination} replace />;
-    }
-    // No está logueado → permitir acceso
-    return <Outlet />;
+    return user ? <Navigate to={redirectTo} replace /> : <Outlet />;
   }
 
-  // Caso 2: Rutas protegidas (requieren estar logueado)
-  if (!user) {
-    // No autenticado → redirigir a login
-    return <Navigate to="/login" replace />;
-  }
+  // Sin sesión → al login
+  if (!user) return <Navigate to="/login" replace />;
 
-  // Caso 3: Verificar rol requerido (si se especificó)
+  // Requiere rol específico
   if (requiredRole && user.role !== requiredRole) {
-    // No tiene el rol necesario → redirigir a home o dashboard según rol
-    const fallback = user.role === 'admin' ? '/admin' : '/';
-    return <Navigate to={fallback} replace />;
+    return <Navigate to="/" replace />;
   }
 
-  // Todo OK → mostrar la ruta
   return <Outlet />;
 };
 
