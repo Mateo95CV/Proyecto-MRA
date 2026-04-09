@@ -1,28 +1,11 @@
 // src/context/AuthContext.tsx
 // Auth 100% con Supabase — sin localStorage manual
-import { createContext, useContext, useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
 import { supabase } from '../lib/supabaseClient';
 import type { Session, User as SupabaseUser } from '@supabase/supabase-js';
-
-// ── Tipo de usuario enriquecido con datos del perfil ──
-export interface AppUser {
-  id: string;
-  email: string;
-  name: string;
-  role: 'user' | 'admin';
-}
-
-interface AuthContextType {
-  user: AppUser | null;
-  session: Session | null;
-  loading: boolean;
-  login: (email: string, password: string) => Promise<'admin' | 'user'>;
-  register: (email: string, password: string, name: string) => Promise<void>;
-  logout: () => Promise<void>;
-}
-
-const AuthContext = createContext<AuthContextType | null>(null);
+import { AuthContext } from './AuthContextInstance';
+import type { AppUser } from '../types/auth';
 
 // ── Convierte usuario Supabase + perfil → AppUser ──
 async function buildAppUser(supaUser: SupabaseUser): Promise<AppUser> {
@@ -40,6 +23,7 @@ async function buildAppUser(supaUser: SupabaseUser): Promise<AppUser> {
   };
 }
 
+
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user,    setUser]    = useState<AppUser | null>(null);
   const [session, setSession] = useState<Session | null>(null);
@@ -47,24 +31,40 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   // Escuchar cambios de sesión de Supabase (login, logout, refresh)
   useEffect(() => {
+    let cancelled = false;
+
+    // Primero obtener la sesión actual
     supabase.auth.getSession().then(async ({ data: { session } }) => {
+      if (cancelled) return;
       setSession(session);
-      if (session?.user) setUser(await buildAppUser(session.user));
-      setLoading(false);
+      if (session?.user) {
+        setUser(await buildAppUser(session.user));
+      }
+      setLoading(false); // ← siempre desbloquear aquí
     });
 
+    // Escuchar cambios futuros (login, logout, refresh)
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (_event, session) => {
+        if (cancelled) return;
         setSession(session);
         if (session?.user) {
-          setUser(await buildAppUser(session.user));
+          const appUser = await buildAppUser(session.user);
+          if (!cancelled) {
+            setUser(appUser);
+            setLoading(false); // ← también aquí
+          }
         } else {
           setUser(null);
+          setLoading(false); // ← y aquí cuando no hay sesión
         }
       }
     );
 
-    return () => subscription.unsubscribe();
+    return () => {
+      cancelled = true;
+      subscription.unsubscribe();
+    };
   }, []);
 
   // ── Login ─────────────────────────────────────────
@@ -99,10 +99,4 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       {children}
     </AuthContext.Provider>
   );
-};
-
-export const useAuth = () => {
-  const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error('useAuth debe usarse dentro de AuthProvider');
-  return ctx;
 };

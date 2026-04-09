@@ -1,7 +1,7 @@
 // src/pages/Perfil.tsx
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../hooks/useAuth';
 import { useOrders } from '../context/OrderContext';
-import { Package, Calendar, ChevronRight, Loader2, LogOut } from 'lucide-react';
+import { Package, Calendar, Loader2, LogOut } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const STATUS_COLORS: Record<string, string> = {

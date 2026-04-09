@@ -1,5 +1,5 @@
 import AdminSidebar from '../../components/Admin/AdminSidebar';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../../hooks/useAuth';
 import { Navigate } from 'react-router-dom';
 
 const AdminLayout = ({ children }: { children: React.ReactNode }) => {

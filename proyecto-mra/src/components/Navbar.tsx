@@ -1,6 +1,6 @@
 import { ShoppingCart, User, LogIn, LogOut, Glasses } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../hooks/useAuth';
 import { useCart } from '../context/CartContext';
 
 const Navbar = () => {

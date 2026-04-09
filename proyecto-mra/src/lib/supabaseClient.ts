@@ -15,4 +15,11 @@ if (!supabaseUrl || !supabaseKey) {
   );
 }
 
-export const supabase = createClient(supabaseUrl, supabaseKey);
+export const supabase = createClient(supabaseUrl, supabaseKey, {
+  auth: {
+    storageKey: 'optica-auth-key', // Cambia el nombre de la llave
+    persistSession: true,
+  },
+  // Desactivar temporalmente los locks si el navegador se queda pegado
+  // Nota: Úsalo solo si el Singleton no arregla el cuelgue
+})

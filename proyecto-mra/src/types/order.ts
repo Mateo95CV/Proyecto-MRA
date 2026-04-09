@@ -40,7 +40,7 @@ export async function getOrderById(id: string): Promise<Order | null> {
 export async function getAllOrders(): Promise<Order[]> {
   const { data, error } = await supabase
     .from('orders')
-    .select('*, order_items(*), profiles(name, phone)')
+    .select('*, order_items(*)') 
     .order('created_at', { ascending: false });
   if (error) throw error;
   return (data ?? []) as Order[];

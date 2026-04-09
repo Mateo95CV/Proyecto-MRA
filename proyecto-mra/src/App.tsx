@@ -6,9 +6,9 @@ import ProtectedRoute from './components/ProtectedRoute';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
-import Perfil from './pages/Perfil';        // ← vamos a crear esta
-import Carrito from './pages/Carrito';      // ← placeholder por ahora
-import Visagismo from './pages/Visagismo';  // ← placeholder por ahora
+import Perfil from './pages/Perfil';        
+import Carrito from './pages/Carrito';      
+import Visagismo from './pages/Visagismo';  
 import ProductDetail from './pages/ProductDetail';
 
 // Paginas de admin
@@ -23,6 +23,7 @@ import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from './context/AuthContext';
 import Checkout from './pages/Checkout';
 import Confirmation from './pages/Confirmation';
+import Footer from './components/Footer';
 
 
 function App() {
@@ -32,8 +33,7 @@ function App() {
         <OrderProvider>
           <Router>
             <Navbar />
-            <Routes>
-              {/* Rutas públicas */}
+            <Routes>              {/* Rutas públicas */}
               <Route element={<ProtectedRoute isPublic redirectTo="/" />}>
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
@@ -60,9 +60,10 @@ function App() {
                 <Route path="/admin/usuarios" element={<AdminUsers />} />
               </Route>
 
-              {/* Ruta 404 (opcional) */}
+              {/* Ruta 404 */}
               <Route path="*" element={<div className="p-10 text-center text-2xl">404 - Página no encontrada</div>} />
             </Routes>
+            <Footer />
             <Toaster 
               position="top-center"
               toastOptions={{

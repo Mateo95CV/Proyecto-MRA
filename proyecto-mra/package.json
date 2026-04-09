@@ -11,9 +11,6 @@
     "lint": "eslint --fix . --ext .js,.jsx,.tsx"
   },
   "dependencies": {
-    "@mediapipe/camera_utils": "^0.3.1675466862",
-    "@mediapipe/drawing_utils": "^0.3.1675466124",
-    "@mediapipe/face_mesh": "^0.4.1633559619",
     "@supabase/supabase-js": "^2.100.0",
     "@tailwindcss/postcss": "^4.2.1",
     "@vitejs/plugin-react": "^4.3.3",
@@ -22,6 +19,7 @@
     "react-dom": "^19.2.4",
     "react-hot-toast": "^2.6.0",
     "react-router-dom": "^7.13.1",
+    "recharts": "^3.8.1",
     "tailwindcss": "^4.2.1",
     "vite": "^5.4.11"
   },
