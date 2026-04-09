@@ -54,7 +54,7 @@ interface OrderContextType {
 const OrderContext = createContext<OrderContextType | null>(null);
 
 export const OrderProvider = ({ children }: { children: ReactNode }) => {
-  const { user, session } = useAuth();
+  const {session } = useAuth();
   const [orders, setOrders]             = useState<Order[]>([]);
   const [loadingOrders, setLoading]     = useState(false);
   const [tick, setTick]                 = useState(0);

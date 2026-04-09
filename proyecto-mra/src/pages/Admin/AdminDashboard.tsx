@@ -4,14 +4,12 @@ import AdminLayout from '../../components/Admin/AdminLayout';
 import { Package, ShoppingCart, DollarSign, Users, TrendingUp } from 'lucide-react';
 import { supabase } from '../../lib/supabaseClient';
 import {
-  BarChart,
   Bar,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  Line,
   ComposedChart,
   Area,
 } from 'recharts';

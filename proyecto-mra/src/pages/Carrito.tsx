@@ -36,7 +36,7 @@ const Carrito = () => {
             className="flex flex-col sm:flex-row items-center gap-6 p-6 border-b last:border-b-0"
           >
             <img
-              src={item.product.imageUrl}
+              src={item.product.image_url}
               alt={item.product.name}
               className="w-24 h-24 object-cover rounded-lg"
             />

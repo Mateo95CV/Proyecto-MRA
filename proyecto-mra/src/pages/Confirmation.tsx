@@ -1,12 +1,11 @@
 // src/pages/Confirmation.tsx
-import { useLocation, Link, useNavigate } from 'react-router-dom';
+import { useLocation, Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { CheckCircle, Package, ArrowRight } from 'lucide-react';
 import { getOrderById, type Order } from '../types/order';
 
 const Confirmation = () => {
   const location  = useLocation();
-  const navigate  = useNavigate();
   const { orderId, purchasedItems = [], total = 0 } = (location.state || {}) as any;
 
   const [order, setOrder] = useState<Order | null>(null);
