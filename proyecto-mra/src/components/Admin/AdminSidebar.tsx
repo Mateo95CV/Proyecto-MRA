@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Package, ShoppingCart, Users, LogOut } from 'lucide-react';
+import { LayoutDashboard, Package, ShoppingCart, Users, LogOut, CalendarDays } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 
 const AdminSidebar = () => {
@@ -58,6 +58,17 @@ const AdminSidebar = () => {
             >
               <Users />
               Usuarios
+            </Link>
+          </li>
+          <li>
+            <Link
+              to="/admin/citas"
+              className={`flex items-center gap-3 p-3 rounded-lg transition ${
+                isActive('/admin/citas') ? 'bg-primary-gold text-primary-purple' : 'hover:bg-purple-800'
+              }`}
+            >
+              <CalendarDays />
+              Citas
             </Link>
           </li>
         </ul>

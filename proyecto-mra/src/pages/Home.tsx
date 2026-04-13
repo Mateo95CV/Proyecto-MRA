@@ -4,11 +4,10 @@ import { ChevronLeft, ChevronRight, Star, Shield, Truck, Headphones, Eye } from 
 import ProductCard from '../components/ProductCard';
 import { useProducts } from '../hooks/useProducts';
 import type { Product } from '../types/product';
-import img from '../assets/Prueba.png';
 
 type CategoryFilter = 'todos' | Product['category'];
 
-const CATEGORIES: { label: string; value: CategoryFilter;}[] = [
+const CATEGORIES: { label: string; value: CategoryFilter; }[] = [
   { label: 'Todos',     value: 'todos',     },
   { label: 'Sol',       value: 'sol',       },
   { label: 'Lectura',   value: 'lectura',   },
@@ -21,7 +20,7 @@ const CATEGORIES: { label: string; value: CategoryFilter;}[] = [
 
 const SLIDES = [
   {
-    img: img,
+    img: 'https://i.ibb.co/8LHt3dyQ/img-ppal-MRA.png"',
     title: 'Óptica MRA',
     subtitle: 'Tu visión, nuestra pasión desde Rionegro, Antioquia',
     cta: 'Ver Colección',
@@ -138,6 +137,40 @@ const BenefitsSection = () => (
   </section>
 );
 
+// ── Banner Citas ───────────────────────────────────────────────────────────────
+
+const CitasBanner = () => (
+  <section className="py-16 px-6 bg-white">
+    <div className="max-w-5xl mx-auto">
+      <div className="bg-gradient-to-br from-primary-purple to-purple-900 rounded-3xl p-8 md:p-12 flex flex-col md:flex-row items-center gap-8 shadow-2xl">
+        <div className="flex flex-col items-center md:items-start text-center md:text-left flex-1 gap-4">
+          <div className="flex items-center gap-3">
+            <span className="text-4xl">📅</span>
+            <span className="bg-primary-gold/20 text-primary-gold text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Agendamiento online</span>
+          </div>
+          <h2 className="text-3xl md:text-4xl font-bold text-white leading-tight">
+            Agenda tu cita en menos de 2 minutos
+          </h2>
+          <p className="text-purple-200 text-lg">
+            Examen visual, adaptación de lentes, recogida de pedido o asesoría de monturas. Sin filas, sin esperas.
+          </p>
+          <div className="flex flex-wrap gap-3 mt-1">
+            {['👁️ Examen visual','🔬 Lentes de contacto','🕶️ Asesoría de monturas','📦 Recogida de pedido'].map(s => (
+              <span key={s} className="bg-white/10 text-purple-100 text-xs px-3 py-1.5 rounded-full">{s}</span>
+            ))}
+          </div>
+        </div>
+        <Link
+          to="/citas"
+          className="shrink-0 bg-primary-gold hover:bg-yellow-400 text-primary-purple px-10 py-5 rounded-2xl font-bold text-lg transition transform hover:scale-105 shadow-xl whitespace-nowrap"
+        >
+          Agendar ahora →
+        </Link>
+      </div>
+    </div>
+  </section>
+);
+
 // ── Banner Visagismo ───────────────────────────────────────────────────────────
 
 const VisagismoBanner = () => (
@@ -176,7 +209,7 @@ const TestimonialsSection = () => (
       <h2 className="text-3xl md:text-4xl font-bold text-primary-purple text-center mb-3">
         Lo que dicen nuestros clientes
       </h2>
-      <p className="text-center text-gray-500 mb-12">Más de 500 clientes satisfechos en toda Antioquia</p>
+      <p className="text-center text-gray-500 mb-12">Más de 500 clientes satisfechos en toda Colombia</p>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {TESTIMONIALS.map(({ name, city, rating, text }) => (
@@ -216,6 +249,9 @@ const Home = () => {
 
       {/* Beneficios */}
       <BenefitsSection />
+
+      {/* Banner citas */}
+      <CitasBanner />
 
       {/* Catálogo */}
       <section id="catalogo" className="py-16 px-6 md:px-10 bg-neutral-light">
