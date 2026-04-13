@@ -91,7 +91,7 @@ const Citas = () => {
   // ── Validaciones por paso ──
 
   const validateStep1 = () => {
-    if (!form.tipo) { setErrors({ tipo: 'Selecciona el tipo de cita' }); return false; }
+    if (!form.tipo) { setErrors(e => ({ ...e, tipo: 'Selecciona el tipo de cita' })); return false; }
     return true;
   };
 
