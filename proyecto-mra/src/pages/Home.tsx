@@ -4,6 +4,7 @@ import { ChevronLeft, ChevronRight, Star, Shield, Truck, Headphones, Eye } from 
 import ProductCard from '../components/ProductCard';
 import { useProducts } from '../hooks/useProducts';
 import type { Product } from '../types/product';
+import img from '../assets/Prueba.png';
 
 type CategoryFilter = 'todos' | Product['category'];
 
@@ -20,7 +21,7 @@ const CATEGORIES: { label: string; value: CategoryFilter;}[] = [
 
 const SLIDES = [
   {
-    img: '/src/assets/Prueba.png',
+    img: img,
     title: 'Óptica MRA',
     subtitle: 'Tu visión, nuestra pasión desde Rionegro, Antioquia',
     cta: 'Ver Colección',

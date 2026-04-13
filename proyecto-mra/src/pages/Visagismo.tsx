@@ -252,7 +252,6 @@ const Visagismo = () => {
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div className="bg-green-50 border border-green-200 rounded-2xl p-4">
                     <div className="flex items-center gap-2 mb-2">
-                      <span className="text-lg">✅</span>
                       <h3 className="font-bold text-green-800 text-sm uppercase tracking-wide">
                         Te recomendamos
                       </h3>
@@ -262,7 +261,6 @@ const Visagismo = () => {
 
                   <div className="bg-red-50 border border-red-200 rounded-2xl p-4">
                     <div className="flex items-center gap-2 mb-2">
-                      <span className="text-lg">⚠️</span>
                       <h3 className="font-bold text-red-800 text-sm uppercase tracking-wide">
                         Mejor evitar
                       </h3>
