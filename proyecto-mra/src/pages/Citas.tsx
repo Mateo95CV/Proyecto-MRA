@@ -425,7 +425,7 @@ const Citas = () => {
                 disabled={loading}
                 className="px-8 py-3 bg-primary-gold hover:bg-yellow-400 text-primary-purple rounded-xl font-bold transition flex items-center gap-2 disabled:opacity-60"
               >
-                {loading ? 'Agendando...' : '✅ Confirmar cita'}
+                {loading ? 'Agendando...' : 'Confirmar cita'}
               </button>
             )}
           </div>

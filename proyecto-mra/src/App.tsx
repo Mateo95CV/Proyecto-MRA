@@ -55,6 +55,7 @@ function AppContent() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/citas" element={<Citas />} />          
         </Route>
 
         {/* Rutas principales (públicas) */}
@@ -69,7 +70,6 @@ function AppContent() {
           <Route path="/producto/:id" element={<ProductDetail />} />
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/confirmacion" element={<Confirmation />} />
-          <Route path="/citas" element={<Citas />} />          
         </Route>
 
         <Route element={<ProtectedRoute requiredRole="admin" />}>
