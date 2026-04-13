@@ -11,6 +11,7 @@ import Carrito from './pages/Carrito';
 import Visagismo from './pages/Visagismo';  
 import ProductDetail from './pages/ProductDetail';
 import ResetPassword from './pages/ResetPassword';
+import Citas from './pages/Citas';
 
 // Paginas de admin
 import AdminDashboard from './pages/Admin/AdminDashboard'
@@ -68,6 +69,7 @@ function AppContent() {
           <Route path="/producto/:id" element={<ProductDetail />} />
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/confirmacion" element={<Confirmation />} />
+          <Route path="/citas" element={<Citas />} />          
         </Route>
 
         <Route element={<ProtectedRoute requiredRole="admin" />}>
