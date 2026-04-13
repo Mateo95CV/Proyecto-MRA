@@ -72,6 +72,8 @@ interface FormData {
   hora: string;
 }
 
+type FormErrors = Partial<Record<keyof FormData, string>>;
+
 const EMPTY: FormData = {
   tipo: '', nombre: '', email: '', telefono: '', notas: '', fecha: '', hora: '',
 };
@@ -79,7 +81,7 @@ const EMPTY: FormData = {
 const Citas = () => {
   const [step, setStep]       = useState(1);
   const [form, setForm]       = useState<FormData>(EMPTY);
-  const [errors, setErrors]   = useState<Partial<FormData>>({});
+  const [errors, setErrors]   = useState<FormErrors>({});
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
 
@@ -96,7 +98,7 @@ const Citas = () => {
   };
 
   const validateStep2 = () => {
-    const e: Partial<FormData> = {};
+    const e: FormErrors = {};
     if (!form.nombre.trim())            e.nombre   = 'El nombre es obligatorio';
     if (!form.email || !/\S+@\S+\.\S+/.test(form.email)) e.email = 'Correo inválido';
     if (!form.telefono.trim())          e.telefono = 'El teléfono es obligatorio';
@@ -105,7 +107,7 @@ const Citas = () => {
   };
 
   const validateStep3 = () => {
-    const e: Partial<FormData> = {};
+    const e: FormErrors = {};
     if (!form.fecha)             e.fecha = 'Selecciona una fecha';
     else if (!isValidDay(form.fecha)) e.fecha = 'No atendemos domingos';
     if (!form.hora)              e.hora  = 'Selecciona una hora';
