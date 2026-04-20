@@ -1,6 +1,5 @@
-// src/context/AuthContext.tsx  (versión corregida)
-
-import { useState, useEffect } from 'react';
+import { useState, useEffect, } from 'react';
+import type { ReactNode } from 'react';
 import { supabase } from '../lib/supabaseClient';
 import type { Session, User } from '@supabase/supabase-js';
 import { AuthContext } from './AuthContextInstance';
@@ -54,7 +53,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     // 2. Listener de cambios (SIN await dentro del callback)
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, newSession) => {
+      async (_event, newSession) => {
         if (cancelled) return;
 
         setSession(newSession);
@@ -80,7 +79,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     };
   }, []);
 
-  // ── Login ─────────────────────────────────────────
+  // Login
   const login = async (email: string, password: string): Promise<'admin' | 'user'> => {
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) throw error;
