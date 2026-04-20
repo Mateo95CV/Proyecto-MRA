@@ -11,6 +11,7 @@
     "lint": "eslint --fix . --ext .js,.jsx,.tsx"
   },
   "dependencies": {
+    "@supabase/auth-helpers-react": "^0.15.0",
     "@supabase/supabase-js": "^2.100.0",
     "@tailwindcss/postcss": "^4.2.1",
     "@vitejs/plugin-react": "^4.3.3",

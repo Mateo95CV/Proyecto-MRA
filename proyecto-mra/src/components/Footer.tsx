@@ -110,7 +110,7 @@ const Footer = () => {
             +57 314 603 0432
           </a>
           <a
-            href="mailto:contacto@opticamra.com"
+            href="mailto:especialistaoptmra04@gmail.com"
             className="flex items-center gap-2 text-purple-200 hover:text-primary-gold text-sm transition"
           >
             <Mail size={16} className="shrink-0 text-primary-gold" />

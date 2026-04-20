@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { ChevronLeft, ChevronRight, Star, Shield, Truck, Headphones, Eye } from 'lucide-react';
 import ProductCard from '../components/ProductCard';
 import { useProducts } from '../hooks/useProducts';
@@ -16,7 +16,7 @@ const CATEGORIES: { label: string; value: CategoryFilter; }[] = [
   { label: 'Deportiva', value: 'deportiva', },
 ];
 
-// ── Carrusel hero ──────────────────────────────────────────────────────────────
+// Carrusel
 
 const SLIDES = [
   {
@@ -110,7 +110,7 @@ const HeroCarousel = () => {
   );
 };
 
-// ── Beneficios ─────────────────────────────────────────────────────────────────
+// Beneficios 
 
 const BENEFITS = [
   { icon: Shield,     title: 'Garantía de Calidad',    desc: 'Todos nuestros productos cuentan con garantía y son de marcas certificadas.' },
@@ -137,7 +137,7 @@ const BenefitsSection = () => (
   </section>
 );
 
-// ── Banner Citas ───────────────────────────────────────────────────────────────
+// Banner Citas
 
 const CitasBanner = () => (
   <section className="py-16 px-6 bg-white">
@@ -171,7 +171,7 @@ const CitasBanner = () => (
   </section>
 );
 
-// ── Banner Visagismo ───────────────────────────────────────────────────────────
+// Banner Visagismo 
 
 const VisagismoBanner = () => (
   <section className="py-16 px-6 bg-primary-purple">
@@ -195,7 +195,7 @@ const VisagismoBanner = () => (
   </section>
 );
 
-// ── Testimonios ────────────────────────────────────────────────────────────────
+// Testimonios
 
 const TESTIMONIALS = [
   { name: 'María Fernanda L.', city: 'Medellín', rating: 5, text: 'Excelente atención. Me ayudaron a elegir unas gafas que se adaptan perfecto a mi cara y llegan rapidísimo.' },
@@ -231,16 +231,24 @@ const TestimonialsSection = () => (
   </section>
 );
 
-// ── Página principal ───────────────────────────────────────────────────────────
+// Pagina principal
 
 const Home = () => {
   const [activeCategory, setActiveCategory] = useState<CategoryFilter>('todos');
   const { products, loading, error } = useProducts();
+  const [searchParams] = useSearchParams();
+  const searchQuery = searchParams.get('search')?.toLowerCase() ?? '';
 
-  const filtered =
-    activeCategory === 'todos'
-      ? products
-      : products.filter(p => p.category === activeCategory);
+  const filtered = products
+    .filter(p => activeCategory === 'todos' || p.category === activeCategory)
+    .filter(p => {
+      if (!searchQuery) return true;
+      return (
+        p.name.toLowerCase().includes(searchQuery) ||
+        p.brand.toLowerCase().includes(searchQuery) ||
+        p.description?.toLowerCase().includes(searchQuery)
+      );
+    });
 
   return (
     <div className="min-h-screen">
@@ -252,6 +260,18 @@ const Home = () => {
 
       {/* Banner citas */}
       <CitasBanner />
+
+      {searchQuery && (
+        <div className="flex items-center justify-between mb-6">
+          <p className="text-gray-600">
+            {filtered.length} resultado{filtered.length !== 1 ? 's' : ''} para{' '}
+            <span className="font-semibold text-primary-purple">"{searchQuery}"</span>
+          </p>
+          <a href="/" className="text-sm text-gray-400 hover:text-primary-purple transition">
+            Limpiar búsqueda
+          </a>
+        </div>
+      )}
 
       {/* Catálogo */}
       <section id="catalogo" className="py-16 px-6 md:px-10 bg-neutral-light">

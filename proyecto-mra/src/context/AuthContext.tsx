@@ -1,62 +1,75 @@
-// src/context/AuthContext.tsx
-// Auth 100% con Supabase — sin localStorage manual
+// src/context/AuthContext.tsx  (versión corregida)
+
 import { useState, useEffect } from 'react';
-import type { ReactNode } from 'react';
 import { supabase } from '../lib/supabaseClient';
-import type { Session, User as SupabaseUser } from '@supabase/supabase-js';
+import type { Session, User } from '@supabase/supabase-js';
 import { AuthContext } from './AuthContextInstance';
 import type { AppUser } from '../types/auth';
 
-// ── Convierte usuario Supabase + perfil → AppUser ──
-async function buildAppUser(supaUser: SupabaseUser): Promise<AppUser> {
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('name, role')
-    .eq('id', supaUser.id)
-    .maybeSingle();
-
-  return {
-    id:    supaUser.id,
-    email: supaUser.email ?? '',
-    name:  profile?.name ?? supaUser.email?.split('@')[0] ?? '',
-    role:  (profile?.role as 'user' | 'admin') ?? 'user',
-  };
-}
-
-
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user,    setUser]    = useState<AppUser | null>(null);
+  const [user, setUser] = useState<AppUser | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Escuchar cambios de sesión de Supabase (login, logout, refresh)
+  // Función para cargar el perfil (separada)
+  const loadProfile = async (supaUser: User): Promise<AppUser> => {
+    const { data: profile, error } = await supabase
+      .from('profiles')
+      .select('name, role')
+      .eq('id', supaUser.id)
+      .maybeSingle();
+
+    if (error) console.error('Error cargando perfil:', error);
+
+    return {
+      id: supaUser.id,
+      email: supaUser.email ?? '',
+      name: profile?.name ?? supaUser.email?.split('@')[0] ?? '',
+      role: (profile?.role as 'user' | 'admin') ?? 'user',
+    };
+  };
+
   useEffect(() => {
     let cancelled = false;
 
-    // Primero obtener la sesión actual
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
-      if (cancelled) return;
-      setSession(session);
-      if (session?.user) {
-        setUser(await buildAppUser(session.user));
-      }
-      setLoading(false); // ← siempre desbloquear aquí
-    });
+    const initializeAuth = async () => {
+      // 1. Obtener sesión inicial (rápido, lee de localStorage)
+      const { data: { session } } = await supabase.auth.getSession();
 
-    // Escuchar cambios futuros (login, logout, refresh)
+      if (cancelled) return;
+
+      setSession(session);
+
+      if (session?.user) {
+        const appUser = await loadProfile(session.user);
+        if (!cancelled) setUser(appUser);
+      } else {
+        setUser(null);
+      }
+
+      setLoading(false);
+    };
+
+    initializeAuth();
+
+    // 2. Listener de cambios (SIN await dentro del callback)
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (_event, session) => {
+      async (event, newSession) => {
         if (cancelled) return;
-        setSession(session);
-        if (session?.user) {
-          const appUser = await buildAppUser(session.user);
-          if (!cancelled) {
-            setUser(appUser);
-            setLoading(false); // ← también aquí
-          }
+
+        setSession(newSession);
+
+        if (newSession?.user) {
+          // Cargamos perfil SIN bloquear el callback
+          loadProfile(newSession.user).then((appUser) => {
+            if (!cancelled) {
+              setUser(appUser);
+              setLoading(false);
+            }
+          });
         } else {
           setUser(null);
-          setLoading(false); // ← y aquí cuando no hay sesión
+          setLoading(false);
         }
       }
     );
@@ -72,7 +85,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) throw error;
 
-    const appUser = await buildAppUser(data.user);
+    const appUser = await loadProfile(data.user);
     setUser(appUser);
     return appUser.role;
   };
@@ -93,7 +106,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setUser(null);
     setSession(null);
   };
-
+  
   return (
     <AuthContext.Provider value={{ user, session, loading, login, register, logout }}>
       {children}

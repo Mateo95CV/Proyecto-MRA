@@ -1,7 +1,7 @@
 // src/pages/Perfil.tsx
 import { useAuth } from '../hooks/useAuth';
 import { useOrders } from '../context/OrderContext';
-import { Package, Calendar, Loader2, LogOut } from 'lucide-react';
+import { Package, Calendar, Loader2, LogOut, LayoutDashboard } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const STATUS_COLORS: Record<string, string> = {
@@ -38,6 +38,15 @@ const Perfil = () => {
               </span>
             </div>
           </div>
+          {user?.role === 'admin' && (
+            <Link
+              to="/admin"
+              className="flex items-center gap-2 bg-primary-purple hover:bg-purple-900 text-white px-6 py-3 rounded-xl font-bold transition"
+            >
+              <LayoutDashboard size={20} />
+              Panel de Administración
+            </Link>
+          )}
           <button
             onClick={logout}
             className="flex items-center gap-2 text-red-500 hover:text-red-700 font-medium transition"
@@ -117,7 +126,7 @@ const Perfil = () => {
                 )}
 
                 <div className="text-sm text-gray-500">
-                  📍 {order.shipping_address} · 📞 {order.shipping_phone}
+                  {order.shipping_address} · {order.shipping_phone}
                 </div>
               </div>
             ))}

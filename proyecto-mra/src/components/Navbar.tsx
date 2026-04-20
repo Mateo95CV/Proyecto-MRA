@@ -1,11 +1,14 @@
 import { ShoppingCart, User, LogIn, LogOut, Glasses } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { useCart } from '../context/CartContext';
+import { useState } from 'react';
 
 const Navbar = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const [query, setQuery] = useState(searchParams.get('search') ?? ''); 
   const { itemCount } = useCart();
 
   const handleAuth = () => {
@@ -14,6 +17,15 @@ const Navbar = () => {
       navigate('/');
     } else {
       navigate('/login');
+    }
+  };
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (query.trim()) {
+      navigate(`/?search=${encodeURIComponent(query.trim())}`);
+    } else {
+      navigate('/');
     }
   };
 
@@ -28,16 +40,20 @@ const Navbar = () => {
         </Link>
 
         {/* Buscador */}
-        <div className="flex-1 max-w-xl mx-4 sm:mx-8">
+        <form onSubmit={handleSearch} className="flex-1 max-w-xl mx-4 sm:mx-8">
           <div className="relative">
             <input
               type="text"
+              value={query}
+              onChange={e => setQuery(e.target.value)}
               placeholder="Busca gafas, lentes de contacto..."
               className="w-full bg-neutral-light border border-gray-300 rounded-full py-3 px-6 pl-12 focus:outline-none focus:border-primary-gold"
             />
-            <Glasses className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400" size={22} />
+            <button type="submit">
+              <Glasses className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400" size={22} />
+            </button>
           </div>
-        </div>
+        </form>
 
         {/* Acciones derecha */}
         <div className="flex items-center gap-6 sm:gap-8">
