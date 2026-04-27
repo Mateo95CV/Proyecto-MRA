@@ -1,4 +1,3 @@
-// src/pages/ProductDetail.tsx
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { ShoppingCart, ArrowLeft, CheckCircle, Loader2 } from 'lucide-react';
@@ -50,7 +49,7 @@ const ProductDetail = () => {
       .finally(() => setLoading(false));
   }, [id]);
 
-  // ── Estados de carga / error ──────────────────────────
+  // Estados de carga / error 
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-neutral-light">

@@ -1,7 +1,4 @@
-// src/hooks/useProducts.ts
-// ─────────────────────────────────────────────
-//  Hook para consumir productos desde Supabase
-// ─────────────────────────────────────────────
+// Carga productos desde la DB ya sea todos o por categoria
 import { useState, useEffect } from 'react';
 import {
   getProducts,

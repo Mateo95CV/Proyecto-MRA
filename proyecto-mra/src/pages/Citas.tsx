@@ -3,7 +3,6 @@ import { Calendar, Clock, User, Mail, Phone, FileText, CheckCircle2, ChevronRigh
 import toast from 'react-hot-toast';
 import { createAppointment, TIPO_LABELS, type AppointmentType } from '../types/appointment';
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
 
 const TIPOS: { value: AppointmentType; emoji: string; desc: string }[] = [
   { value: 'examen_visual',        emoji: '👁️', desc: 'Evaluación completa de tu salud visual' },
@@ -12,7 +11,7 @@ const TIPOS: { value: AppointmentType; emoji: string; desc: string }[] = [
   { value: 'consultoria_monturas', emoji: '🕶️', desc: 'Asesoría personalizada de monturas' },
 ];
 
-// Genera slots de 30 min entre 8am y 6pm (lun–sab)
+// Genera intervalos de 30 min entre 8am y 6pm (lun–sab)
 const HORAS = Array.from({ length: 20 }, (_, i) => {
   const totalMin = 8 * 60 + i * 30;
   const h = Math.floor(totalMin / 60).toString().padStart(2, '0');
@@ -20,7 +19,7 @@ const HORAS = Array.from({ length: 20 }, (_, i) => {
   return `${h}:${m}`;
 });
 
-// Mínimo mañana
+// Minimo fecha para el siguiente dia (no se puede el mismo dia)
 const minDate = () => {
   const d = new Date();
   d.setDate(d.getDate() + 1);
@@ -33,7 +32,7 @@ const isValidDay = (dateStr: string) => {
   return new Date(dateStr).getDay() !== 0; // 0 = domingo
 };
 
-// ── Step indicator ────────────────────────────────────────────────────────────
+// Muestra los pasos y el progreso actual
 
 const Steps = ({ current }: { current: number }) => (
   <div className="flex items-center justify-center gap-2 mb-10">
@@ -60,7 +59,7 @@ const Steps = ({ current }: { current: number }) => (
   </div>
 );
 
-// ── Formulario principal ──────────────────────────────────────────────────────
+// Formulario principal
 
 interface FormData {
   tipo: AppointmentType | '';
@@ -90,7 +89,7 @@ const Citas = () => {
     setErrors(e => ({ ...e, [field]: '' }));
   };
 
-  // ── Validaciones por paso ──
+  // Validaciones por paso
 
   const validateStep1 = () => {
     if (!form.tipo) { setErrors(e => ({ ...e, tipo: 'Selecciona el tipo de cita' })); return false; }
@@ -143,7 +142,7 @@ const Citas = () => {
     }
   };
 
-  // ── Pantalla de éxito ──
+  // Pantalla de éxito
 
   if (success) {
     const tipoData = TIPOS.find(t => t.value === form.tipo)!;

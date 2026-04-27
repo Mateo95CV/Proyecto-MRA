@@ -1,3 +1,4 @@
+// Practicamente el index
 import { useState, useEffect, useRef } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { ChevronLeft, ChevronRight, Star, Shield, Truck, Headphones, Eye } from 'lucide-react';
@@ -82,7 +83,7 @@ const HeroCarousel = () => {
         </div>
       ))}
 
-      {/* Controles */}
+      {/* Flechitas de navegacion */}
       <button
         onClick={prev}
         className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/40 text-white p-3 rounded-full backdrop-blur-sm transition opacity-0 group-hover:opacity-100"
@@ -96,7 +97,7 @@ const HeroCarousel = () => {
         <ChevronRight size={28} />
       </button>
 
-      {/* Dots */}
+      {/* Indicadores */}
       <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2">
         {SLIDES.map((_, i) => (
           <button

@@ -1,4 +1,3 @@
-// src/pages/Perfil.tsx
 import { useAuth } from '../hooks/useAuth';
 import { useOrders } from '../context/OrderContext';
 import { Package, Calendar, Loader2, LogOut, LayoutDashboard } from 'lucide-react';

@@ -62,7 +62,7 @@ export interface Consulta {
 export type NewPaciente = Omit<Paciente, 'id' | 'created_at'>;
 export type NewConsulta = Omit<Consulta, 'id' | 'created_at' | 'paciente'>;
 
-// ── Queries: Pacientes ────────────────────────────────────────────────────────
+// Queries: Pacientes
 
 export async function searchPacientes(query: string): Promise<Paciente[]> {
   const { data, error } = await supabase
@@ -100,7 +100,7 @@ export async function updatePaciente(id: string, p: Partial<NewPaciente>): Promi
   if (error) throw error;
 }
 
-// ── Queries: Consultas ────────────────────────────────────────────────────────
+// Queries: Consultas
 
 export async function getAllConsultas(): Promise<Consulta[]> {
   const { data, error } = await supabase

@@ -1,4 +1,4 @@
-// src/pages/Confirmation.tsx
+// Confirmacion de pedido
 import { useLocation, Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { CheckCircle, Package, ArrowRight } from 'lucide-react';

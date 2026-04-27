@@ -1,4 +1,3 @@
-// src/types/order.ts
 import { supabase } from '../lib/supabaseClient';
 
 export interface OrderItem {

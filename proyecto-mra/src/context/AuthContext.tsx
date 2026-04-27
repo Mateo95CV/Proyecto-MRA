@@ -10,7 +10,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Función para cargar el perfil (separada)
+  // Funcion para cargar el perfil (separada)
   const loadProfile = async (supaUser: User): Promise<AppUser> => {
     const { data: profile, error } = await supabase
       .from('profiles')
@@ -32,7 +32,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     let cancelled = false;
 
     const initializeAuth = async () => {
-      // 1. Obtener sesión inicial (rápido, lee de localStorage)
+      // 1. Obtener sesion inicial (rapido, lee de localStorage)
       const { data: { session } } = await supabase.auth.getSession();
 
       if (cancelled) return;
@@ -89,7 +89,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return appUser.role;
   };
 
-  // ── Registro ──────────────────────────────────────
+  // Registro 
   const register = async (email: string, password: string, name: string): Promise<void> => {
     const { error } = await supabase.auth.signUp({
       email,
@@ -99,7 +99,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     if (error) throw error;
   };
 
-  // ── Logout ────────────────────────────────────────
+  // Logout 
   const logout = async (): Promise<void> => {
     await supabase.auth.signOut();
     setUser(null);

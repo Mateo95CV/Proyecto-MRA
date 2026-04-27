@@ -1,7 +1,6 @@
-// src/types/product.ts
 import { supabase } from '../lib/supabaseClient';
 
-// ── Tipos ────────────────────────────────────────────
+// Tipos 
 export interface Product {
   id: string;
   name: string;
@@ -20,7 +19,7 @@ export interface Product {
 
 export type NewProduct = Omit<Product, 'id' | 'active' | 'created_at' | 'updated_at'>;
 
-// ── Queries ──────────────────────────────────────────
+// Queries 
 
 export async function getProducts(): Promise<Product[]> {
   const { data, error } = await supabase
@@ -91,7 +90,7 @@ export async function deleteProduct(id: string): Promise<void> {
   if (error) throw error;
 }
 
-// ── Storage ──────────────────────────────────────────
+// Storage
 
 const BUCKET = 'product-images';
 

@@ -154,7 +154,7 @@ const AdminProducts = () => {
         <div className="bg-white p-8 rounded-2xl shadow-lg mb-10 border-l-4 border-primary-gold">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-2xl font-bold text-primary-purple">
-              {mode === 'edit' ? '✏️ Editar Producto' : '➕ Nuevo Producto'}
+              {mode === 'edit' ? 'Editar Producto' : 'Nuevo Producto'}
             </h2>
             <button
               onClick={closeForm}

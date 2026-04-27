@@ -1,4 +1,3 @@
-// src/pages/Login.tsx
 import { useState } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { useNavigate, Link } from 'react-router-dom';
@@ -17,7 +16,7 @@ const Login = () => {
   const [resetEmail, setResetEmail] = useState('');
   const [resetMsg, setResetMsg] = useState('');
 
-// Esto es para el recuperacion de contraseña
+// Esto es para la recuperacion de contraseña
 const handleReset = async (e: React.FormEvent) => {
   e.preventDefault();
   setLoading(true);
@@ -42,7 +41,6 @@ const handleReset = async (e: React.FormEvent) => {
       const role = await login(email, password);
       navigate(role === 'admin' ? '/admin' : '/');
     } catch (err: any) {
-      // Traducir mensajes de Supabase al español
       const msg = err.message ?? '';
       if (msg.includes('Invalid login')) setError('Correo o contraseña incorrectos');
       else if (msg.includes('Email not confirmed')) setError('Debes confirmar tu correo antes de entrar');

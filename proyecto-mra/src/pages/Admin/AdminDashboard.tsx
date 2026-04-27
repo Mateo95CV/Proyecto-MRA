@@ -14,7 +14,7 @@ import {
   Area,
 } from 'recharts';
 
-// ── Tipos ─────────────────────────────────────────────────────────────
+// Tipos
 interface Stats {
   productos: number;
   pedidosHoy: number;
@@ -29,7 +29,7 @@ interface VentasMes {
   pedidos: number;
 }
 
-// ── Tooltip personalizado ─────────────────────────────────────────────
+// Tooltip personalizado para el grafico
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (!active || !payload?.length) return null;
   return (
@@ -46,7 +46,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
   );
 };
 
-// ── Componente principal ──────────────────────────────────────────────
+// Componente principal 
 const AdminDashboard = () => {
   const [stats,   setStats]   = useState<Stats | null>(null);
   const [ventas,  setVentas]  = useState<VentasMes[]>([]);
@@ -59,7 +59,7 @@ const AdminDashboard = () => {
     const fetchAll = async () => {
       setLoading(true);
       try {
-        // ── Stats en paralelo ──
+        // Stats en paralelo
         const [
           { count: productos },
           { count: usuariosActivos },
@@ -112,7 +112,7 @@ const AdminDashboard = () => {
           otsPendientes:   consultasYear?.filter(c => c.status === 'pendiente').length ?? 0,
         });
 
-        // ── Agrupar ventas por mes ──
+        // Agrupar ventas por mes
         const porMes: Record<number, { ventas: number; pedidos: number }> = {};
         for (let i = 0; i < 12; i++) porMes[i] = { ventas: 0, pedidos: 0 };
 

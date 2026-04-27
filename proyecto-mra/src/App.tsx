@@ -87,7 +87,7 @@ function AppContent() {
       </Routes>
       {!location.pathname.startsWith('/admin') && location.pathname !== '/login' && location.pathname !== '/register' && <Footer />}
       <Toaster 
-        position="top-center"
+        position="bottom-right"
         toastOptions={{
           duration: 3000,
           style: {

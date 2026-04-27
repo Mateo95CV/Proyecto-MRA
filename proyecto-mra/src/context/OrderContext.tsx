@@ -1,11 +1,9 @@
-// src/context/OrderContext.tsx
-// Pedidos 100% con Supabase
 import { createContext, useContext, useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
 import { supabase } from '../lib/supabaseClient';
 import { useAuth } from '../hooks/useAuth';
 
-// ── Tipos ────────────────────────────────────────────
+// Tipos
 export interface OrderItem {
   id?: string;
   order_id?: string;
@@ -75,7 +73,7 @@ export const OrderProvider = ({ children }: { children: ReactNode }) => {
       });
   }, [session, tick]);
 
-  // ── Crear pedido ─────────────────────────────────
+  // Crear pedido
   const addOrder = async (payload: NewOrderPayload): Promise<Order> => {
     if (!session?.user) throw new Error('Debes iniciar sesión para hacer un pedido');
 
@@ -119,7 +117,7 @@ export const OrderProvider = ({ children }: { children: ReactNode }) => {
     return order as Order;
   };
 
-  // ── Obtener un pedido por ID ──────────────────────
+  // Obtener un pedido por ID
   const getOrderById = async (id: string): Promise<Order | null> => {
     const { data, error } = await supabase
       .from('orders')

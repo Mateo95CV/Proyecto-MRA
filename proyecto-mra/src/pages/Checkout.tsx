@@ -1,4 +1,4 @@
-// src/pages/Checkout.tsx
+// Completa el proceso de checkout, validando datos y creando la orden en la base de datos.
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
@@ -31,6 +31,7 @@ const Checkout = () => {
   };
 
   const validate = () => {
+    // Validacion de campos requeridos y formato de teléfono
     const e: Record<string, string> = {};
     if (!formData.nombre.trim())    e.nombre    = 'Requerido';
     if (!formData.direccion.trim()) e.direccion = 'Requerido';
@@ -66,7 +67,7 @@ const Checkout = () => {
       });
 
       clearCart();
-      toast.success('¡Pedido confirmado! 🎉', { duration: 5000 });
+      toast.success('¡Pedido confirmado!', { duration: 5000 });
       navigate('/confirmacion', { state: { orderId: order.id, purchasedItems: cart, total } });
     } catch (err: any) {
       toast.error(`Error al procesar: ${err.message}`);

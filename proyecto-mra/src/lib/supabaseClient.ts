@@ -1,8 +1,4 @@
-// src/lib/supabaseClient.ts
-// ─────────────────────────────────────────────
 //  Configura el cliente de Supabase.
-//  Las variables de entorno se definen en .env
-// ─────────────────────────────────────────────
 import { createClient } from '@supabase/supabase-js';
 
 const supabaseUrl  = import.meta.env.VITE_SUPABASE_URL  as string;

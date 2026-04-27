@@ -33,9 +33,8 @@ const Navbar = () => {
     <nav className="bg-white shadow-md sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
         
-        {/* Logo */}
+        {/* Logo, en este caso el texto */}
         <Link to="/" className="flex items-center gap-3">
-          {/* <img src="/logo.png" alt="Logo Óptica" className="h-10 w-auto" /> */}
           <span className="text-2xl font-bold text-primary-purple">Óptica MRA</span>
         </Link>
 

@@ -34,10 +34,6 @@ const OT_ICONS: Record<OtStatus, React.ReactNode> = {
   cancelada: <XCircle  size={14} />,
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Modal: crear / editar consulta
-// ─────────────────────────────────────────────────────────────────────────────
-
 interface ConsultaFormProps {
   consulta?: Consulta | null;
   pacientes: Paciente[];
@@ -407,9 +403,7 @@ const ConsultaForm = ({ consulta, products, onSave, onClose }: ConsultaFormProps
   );
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
 // Tarjeta de consulta
-// ─────────────────────────────────────────────────────────────────────────────
 
 const ConsultaCard = ({
   consulta, onEdit, onStatus, historial,
@@ -540,9 +534,7 @@ const ConsultaCard = ({
   );
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
 // Página principal
-// ─────────────────────────────────────────────────────────────────────────────
 
 type FilterStatus = 'todas' | OtStatus;
 

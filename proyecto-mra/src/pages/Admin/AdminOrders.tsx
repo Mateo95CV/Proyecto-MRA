@@ -1,4 +1,3 @@
-// src/pages/Admin/AdminOrders.tsx
 import AdminLayout from '../../components/Admin/AdminLayout';
 import { useState, useEffect } from 'react';
 import { Loader2 } from 'lucide-react';

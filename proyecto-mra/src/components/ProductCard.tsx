@@ -12,7 +12,7 @@ interface ProductCardProps {
 const ProductCard = ({ product }: ProductCardProps) => {
   const { addToCart } = useCart();
 
-  // Adaptar a la forma que CartContext espera (imageUrl camelCase)
+  // Adaptar a la forma que CartContext espera (imageUrl)
   const cartProduct = {
     ...product,
     imageUrl: product.image_url,

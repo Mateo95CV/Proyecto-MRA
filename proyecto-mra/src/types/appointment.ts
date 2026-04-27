@@ -34,7 +34,7 @@ export const STATUS_LABELS: Record<AppointmentStatus, string> = {
   cancelada:  'Cancelada',
 };
 
-// ── Queries ──────────────────────────────────────────────────────────────────
+// Queries para manejar citas en Supabase
 
 export async function createAppointment(
   data: Omit<Appointment, 'id' | 'status' | 'created_at'>

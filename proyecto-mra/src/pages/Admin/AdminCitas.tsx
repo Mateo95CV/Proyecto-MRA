@@ -11,7 +11,7 @@ import {
 } from '../../types/appointment';
 import toast from 'react-hot-toast';
 
-// ── Badge de estado ───────────────────────────────────────────────────────────
+// Badge de estado
 
 const STATUS_STYLES: Record<AppointmentStatus, string> = {
   pendiente:  'bg-yellow-100 text-yellow-800 border-yellow-200',
@@ -25,7 +25,7 @@ const StatusBadge = ({ status }: { status: AppointmentStatus }) => (
   </span>
 );
 
-// ── Tarjeta de cita ───────────────────────────────────────────────────────────
+// Tarjeta de cita
 
 const AppointmentCard = ({
   apt,
@@ -111,7 +111,7 @@ const AppointmentCard = ({
   );
 };
 
-// ── Página admin ──────────────────────────────────────────────────────────────
+// Página admin
 
 type FilterStatus = 'todas' | AppointmentStatus;
 
