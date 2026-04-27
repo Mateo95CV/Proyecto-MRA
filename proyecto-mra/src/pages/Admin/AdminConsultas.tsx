@@ -8,7 +8,7 @@ import {
 import toast from 'react-hot-toast';
 import {
   getAllConsultas, createConsulta, updateConsulta, updateOtStatus,
-  getAllPacientes, createPaciente, updatePaciente, searchPacientes,
+  getAllPacientes, createPaciente, searchPacientes,
   TIPO_LENTE_LABELS, OT_STATUS_LABELS, ESTADO_PAGO_LABELS,
   type Consulta, type Paciente, type NewConsulta, type NewPaciente,
   type TipoLente, type OtStatus, type EstadoPago,
