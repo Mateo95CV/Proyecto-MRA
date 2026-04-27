@@ -19,6 +19,7 @@ import AdminProducts from './pages/Admin/AdminProducts'
 import AdminOrders from './pages/Admin/AdminOrders'
 import AdminUsers from './pages/Admin/AdminUsers'
 import AdminCitas from './pages/Admin/AdminCitas'
+import AdminConsultas from './pages/Admin/AdminConsultas';
 
 import { OrderProvider } from './context/OrderContext';
 import { CartProvider } from './context/CartContext';
@@ -78,6 +79,7 @@ function AppContent() {
           <Route path="/admin/pedidos" element={<AdminOrders />} />
           <Route path="/admin/usuarios" element={<AdminUsers />} />
           <Route path="/admin/citas" element={<AdminCitas />} />          
+          <Route path="/admin/consultas" element={<AdminConsultas />} />          
         </Route>
 
         {/* Ruta 404 */}

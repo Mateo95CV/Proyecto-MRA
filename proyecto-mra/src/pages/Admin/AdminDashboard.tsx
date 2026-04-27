@@ -1,7 +1,7 @@
 // src/pages/Admin/AdminDashboard.tsx
 import { useEffect, useState } from 'react';
 import AdminLayout from '../../components/Admin/AdminLayout';
-import { Package, ShoppingCart, DollarSign, Users, TrendingUp } from 'lucide-react';
+import { Package, ShoppingCart, DollarSign, Users, TrendingUp, Eye } from 'lucide-react';
 import { supabase } from '../../lib/supabaseClient';
 import {
   Bar,
@@ -20,6 +20,7 @@ interface Stats {
   pedidosHoy: number;
   ventasMes: number;
   usuariosActivos: number;
+  otsPendientes: number;
 }
 
 interface VentasMes {
@@ -65,6 +66,8 @@ const AdminDashboard = () => {
           { data: pedidosHoy },
           { data: ventasMesData },
           { data: ordersYear },
+          { data: consultasMesData },
+          { data: consultasYear }
         ] = await Promise.all([
           supabase.from('products').select('*', { count: 'exact', head: true }).eq('active', true),
           supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('active', true),
@@ -83,13 +86,30 @@ const AdminDashboard = () => {
             .gte('created_at', `${year}-01-01`)
             .lte('created_at', `${year}-12-31`)
             .neq('status', 'Cancelado'),
+            // Consultas/OT del mes actual (no canceladas)
+          supabase
+            .from('consultas')
+            .select('precio_total')
+            .gte('fecha_consulta', new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0])
+            .neq('status', 'cancelada'),
+          // Consultas/OT del año para el gráfico
+          supabase
+            .from('consultas')
+            .select('fecha_consulta, precio_total, status')
+            .gte('fecha_consulta', `${year}-01-01`)
+            .lte('fecha_consulta', `${year}-12-31`)
+            .neq('status', 'cancelada'),
         ]);
 
+        const ventasOnline = ventasMesData?.reduce((acc, o) => acc + (o.total ?? 0), 0) ?? 0;
+        const ventasOT     = consultasMesData?.reduce((acc, c) => acc + (c.precio_total ?? 0), 0) ?? 0;
+        
         setStats({
           productos:       productos ?? 0,
           pedidosHoy:      pedidosHoy?.length ?? 0,
-          ventasMes:       ventasMesData?.reduce((acc, o) => acc + (o.total ?? 0), 0) ?? 0,
+          ventasMes:       ventasOnline + ventasOT,
           usuariosActivos: usuariosActivos ?? 0,
+          otsPendientes:   consultasYear?.filter(c => c.status === 'pendiente').length ?? 0,
         });
 
         // ── Agrupar ventas por mes ──
@@ -99,6 +119,13 @@ const AdminDashboard = () => {
         (ordersYear ?? []).forEach((o: any) => {
           const mes = new Date(o.created_at).getMonth();
           porMes[mes].ventas  += o.total ?? 0;
+          porMes[mes].pedidos += 1;
+        });
+
+        (consultasYear ?? []).forEach((c: any) => {
+          // fecha_consulta es 'YYYY-MM-DD', no timestamp
+          const mes = new Date(c.fecha_consulta + 'T12:00:00').getMonth();
+          porMes[mes].ventas += c.precio_total ?? 0;
           porMes[mes].pedidos += 1;
         });
 
@@ -143,6 +170,12 @@ const AdminDashboard = () => {
           label: 'Usuarios activos',
           value: stats.usuariosActivos,
           icon: <Users size={38} className="text-primary-gold opacity-70" />,
+          format: (v: number) => v.toString(),
+        },
+        {
+          label: 'OTs pendientes',
+          value: stats.otsPendientes,
+          icon: <Eye size={38} className="text-primary-gold opacity-70" />,
           format: (v: number) => v.toString(),
         },
       ]

@@ -74,7 +74,6 @@ export async function updateProduct(
   id: string,
   updates: Partial<NewProduct>
 ): Promise<void> {
-  // Separamos update y select para evitar el error 406 de RLS
   const { error } = await supabase
     .from('products')
     .update(updates)
