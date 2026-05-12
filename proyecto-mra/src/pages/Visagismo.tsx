@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { ChevronRight, CheckCircle2, RefreshCw } from 'lucide-react';
+import { ChevronRight, CheckCircle2, RefreshCw, Shield } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 type FaceShape = 'oval' | 'redondo' | 'cuadrado' | 'corazon' | 'rectangular' | 'diamante';
 
@@ -178,6 +179,16 @@ const Visagismo = () => {
           <p className="text-gray-600 text-lg max-w-2xl mx-auto">
             Descubre qué montura es ideal para ti según la forma de tu rostro.
           </p>
+          {/* Aviso de privacidad */}
+          <div className="inline-flex items-center gap-2 mt-4 bg-green-50 border border-green-200 text-green-800 text-xs px-4 py-2 rounded-full">
+            <Shield size={14} className="shrink-0" />
+            <span>
+              Tu privacidad está protegida · No guardamos ninguna foto de tu rostro ·{' '}
+              <Link to="/politica-privacidad" className="font-semibold underline hover:text-green-900">
+                Ver política
+              </Link>
+            </span>
+          </div>
         </div>
 
         {!confirmed ? (

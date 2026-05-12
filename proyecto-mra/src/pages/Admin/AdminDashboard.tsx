@@ -1,4 +1,3 @@
-// src/pages/Admin/AdminDashboard.tsx
 import { useEffect, useState } from 'react';
 import AdminLayout from '../../components/Admin/AdminLayout';
 import { Package, ShoppingCart, DollarSign, Users, TrendingUp, Eye } from 'lucide-react';

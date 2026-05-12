@@ -21,7 +21,7 @@ const CATEGORIES: { label: string; value: CategoryFilter; }[] = [
 
 const SLIDES = [
   {
-    img: 'https://i.ibb.co/8LHt3dyQ/img-ppal-MRA.png"',
+    img: 'https://i.ibb.co/8LHt3dyQ/img-ppal-MRA.png',
     title: 'Óptica MRA',
     subtitle: 'Tu visión, nuestra pasión desde Rionegro, Antioquia',
     cta: 'Ver Colección',
@@ -240,7 +240,7 @@ const Home = () => {
   const [searchParams] = useSearchParams();
   const searchQuery = searchParams.get('search')?.toLowerCase() ?? '';
 
-  const filtered = products
+  const allFiltered = products
     .filter(p => activeCategory === 'todos' || p.category === activeCategory)
     .filter(p => {
       if (!searchQuery) return true;
@@ -250,6 +250,10 @@ const Home = () => {
         p.description?.toLowerCase().includes(searchQuery)
       );
     });
+
+  const MAX_HOME_PRODUCTS = 4;
+  const filtered = allFiltered.slice(0, MAX_HOME_PRODUCTS);
+  const hasMore  = allFiltered.length > MAX_HOME_PRODUCTS;
 
   return (
     <div className="min-h-screen">
@@ -325,7 +329,19 @@ const Home = () => {
                     <ProductCard key={product.id} product={product} />
                   ))}
                 </div>
-              )}
+                )}{hasMore && (
+                  <div className="text-center mt-12">
+                    <p className="text-gray-500 text-sm mb-4">
+                      Mostrando {filtered.length} de {allFiltered.length} productos
+                    </p>
+                    <Link
+                      to="/monturas"
+                      className="inline-flex items-center gap-2 bg-primary-purple hover:bg-purple-900 text-white px-8 py-4 rounded-full font-bold text-lg transition transform hover:scale-105 shadow-lg"
+                    >
+                      Ver todos los productos →
+                    </Link>
+                  </div>
+                )}
             </>
           )}
         </div>

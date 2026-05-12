@@ -5,6 +5,8 @@ export interface AppUser {
   email: string;
   name: string;
   role: 'user' | 'admin';
+  phone: string;
+  address: string;
 }
 
 export interface AuthContextType {
@@ -14,4 +16,5 @@ export interface AuthContextType {
   login: (email: string, password: string) => Promise<'admin' | 'user'>;
   register: (email: string, password: string, name: string) => Promise<void>;
   logout: () => Promise<void>;
+  updateProfile: (data: { name: string; phone: string; address: string }) => Promise<void>;
 }

@@ -28,6 +28,9 @@ import { AuthProvider } from './context/AuthContext';
 import Checkout from './pages/Checkout';
 import Confirmation from './pages/Confirmation';
 import Footer from './components/Footer';
+import WhatsAppButton from './components/WhatsappButton';
+import PoliticaPrivacidad from './pages/PoliticaPrivacidad';
+import Monturas from './pages/Monturas';
 
 
 function App() {
@@ -56,11 +59,13 @@ function AppContent() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/reset-password" element={<ResetPassword />} />
-          <Route path="/citas" element={<Citas />} />          
         </Route>
 
         {/* Rutas principales (públicas) */}
         <Route path="/" element={<Home />} />
+        <Route path="/politica-privacidad" element={<PoliticaPrivacidad />} />
+        <Route path="/citas" element={<Citas />} />          
+        <Route path="/monturas" element={<Monturas />} />
 
 
         {/* Rutas protegidas */}
@@ -86,6 +91,7 @@ function AppContent() {
         <Route path="*" element={<div className="p-10 text-center text-2xl">404 - Página no encontrada</div>} />
       </Routes>
       {!location.pathname.startsWith('/admin') && location.pathname !== '/login' && location.pathname !== '/register' && <Footer />}
+      {!location.pathname.startsWith('/admin') && <WhatsAppButton />}
       <Toaster 
         position="bottom-right"
         toastOptions={{

@@ -10,11 +10,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Funcion para cargar el perfil (separada)
+  // Carga el perfil completo desde la tabla profiles
   const loadProfile = async (supaUser: User): Promise<AppUser> => {
     const { data: profile, error } = await supabase
       .from('profiles')
-      .select('name, role')
+      .select('name, role, phone, address')
       .eq('id', supaUser.id)
       .maybeSingle();
 
@@ -25,6 +25,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       email: supaUser.email ?? '',
       name: profile?.name ?? supaUser.email?.split('@')[0] ?? '',
       role: (profile?.role as 'user' | 'admin') ?? 'user',
+      phone: profile?.phone ?? '',
+      address: profile?.address ?? '',
     };
   };
 
@@ -32,7 +34,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     let cancelled = false;
 
     const initializeAuth = async () => {
-      // 1. Obtener sesion inicial (rapido, lee de localStorage)
       const { data: { session } } = await supabase.auth.getSession();
 
       if (cancelled) return;
@@ -51,7 +52,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     initializeAuth();
 
-    // 2. Listener de cambios (SIN await dentro del callback)
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (_event, newSession) => {
         if (cancelled) return;
@@ -59,7 +59,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setSession(newSession);
 
         if (newSession?.user) {
-          // Cargamos perfil SIN bloquear el callback
           loadProfile(newSession.user).then((appUser) => {
             if (!cancelled) {
               setUser(appUser);
@@ -89,25 +88,44 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return appUser.role;
   };
 
-  // Registro 
+  // Registro
   const register = async (email: string, password: string, name: string): Promise<void> => {
     const { error } = await supabase.auth.signUp({
       email,
       password,
-      options: { data: { name } },   // ← el trigger lo inserta en profiles
+      options: { data: { name } },
     });
     if (error) throw error;
   };
 
-  // Logout 
+  // Actualizar perfil (name, phone, address)
+  const updateProfile = async (data: { name: string; phone: string; address: string }): Promise<void> => {
+    if (!user) throw new Error('No hay sesión activa');
+
+    const { error } = await supabase
+      .from('profiles')
+      .update({
+        name: data.name.trim(),
+        phone: data.phone.trim(),
+        address: data.address.trim(),
+      })
+      .eq('id', user.id);
+
+    if (error) throw error;
+
+    // Actualizar estado local inmediatamente
+    setUser(prev => prev ? { ...prev, ...data } : prev);
+  };
+
+  // Logout
   const logout = async (): Promise<void> => {
     await supabase.auth.signOut();
     setUser(null);
     setSession(null);
   };
-  
+
   return (
-    <AuthContext.Provider value={{ user, session, loading, login, register, logout }}>
+    <AuthContext.Provider value={{ user, session, loading, login, register, logout, updateProfile }}>
       {children}
     </AuthContext.Provider>
   );

@@ -7,9 +7,10 @@ const Register = () => {
   const [formData, setFormData] = useState({
     nombre: '', email: '', password: '', confirmPassword: '',
   });
-  const [errors,   setErrors]   = useState<Record<string, string>>({});
-  const [loading,  setLoading]  = useState(false);
-  const [success,  setSuccess]  = useState('');
+  const [errors,        setErrors]        = useState<Record<string, string>>({});
+  const [loading,       setLoading]       = useState(false);
+  const [success,       setSuccess]       = useState('');
+  const [aceptaTerminos, setAceptaTerminos] = useState(false);
   const { register } = useAuth();
   const navigate      = useNavigate();
 
@@ -22,6 +23,8 @@ const Register = () => {
     else if (formData.password.length < 6)     e.password = 'Mínimo 6 caracteres';
     if (formData.password !== formData.confirmPassword)
       e.confirmPassword = 'Las contraseñas no coinciden';
+    if (!aceptaTerminos)
+      e.terminos = 'Debes aceptar la política de privacidad para continuar';
     setErrors(e);
     return Object.keys(e).length === 0;
   };
@@ -89,6 +92,36 @@ const Register = () => {
           {field('email',           'Correo electrónico', 'email')}
           {field('password',        'Contraseña',         'password')}
           {field('confirmPassword', 'Confirmar contraseña','password')}
+
+          {/* Consentimiento Habeas Data */}
+          <div className="bg-gray-50 border border-gray-200 rounded-2xl p-4">
+            <label className="flex items-start gap-3 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={aceptaTerminos}
+                onChange={e => {
+                  setAceptaTerminos(e.target.checked);
+                  if (errors.terminos) setErrors(prev => ({ ...prev, terminos: '' }));
+                }}
+                className="mt-1 w-4 h-4 accent-primary-purple shrink-0"
+              />
+              <span className="text-sm text-gray-600 leading-relaxed">
+                He leído y acepto la{' '}
+                <Link
+                  to="/politica-privacidad"
+                  target="_blank"
+                  className="text-primary-purple font-medium hover:underline"
+                >
+                  Política de Privacidad y Habeas Data
+                </Link>{' '}
+                de Óptica MRA. Autorizo el tratamiento de mis datos personales conforme a la
+                Ley 1581 de 2012 para los fines descritos en dicha política.
+              </span>
+            </label>
+            {errors.terminos && (
+              <p className="text-red-500 text-xs mt-2 ml-7">{errors.terminos}</p>
+            )}
+          </div>
 
           <button
             type="submit"

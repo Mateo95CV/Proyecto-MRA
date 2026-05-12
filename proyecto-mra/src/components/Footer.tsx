@@ -7,7 +7,7 @@ const Footer = () => {
   return (
     <footer className="bg-primary-purple text-white">
       {/* Cuerpo del footer */}
-      <div className="max-w-7xl mx-auto px-6 py-14 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
+      <div className="max-w-7xl mx-auto px-6 py-14 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-10">
 
         {/* Columna 1 – Marca */}
         <div className="flex flex-col gap-4">
@@ -44,6 +44,7 @@ const Footer = () => {
           </h3>
           {[
             { label: 'Inicio',            to: '/'          },
+            { label: 'Monturas',          to: '/monturas'  },
             { label: 'Mi perfil',         to: '/perfil'    },
             { label: 'Carrito',           to: '/carrito'   },
             { label: 'Visagismo Virtual', to: '/visagismo' },
@@ -56,6 +57,29 @@ const Footer = () => {
               {label}
             </Link>
           ))}
+        </div>
+
+        {/* Columna legal */}
+        <div className="flex flex-col gap-3">
+          <h3 className="text-primary-gold font-semibold uppercase tracking-wider text-sm mb-1">
+            Legal
+          </h3>
+          <Link
+            to="/politica-privacidad"
+            className="text-purple-200 hover:text-primary-gold text-sm transition"
+          >
+            Política de Privacidad
+          </Link>
+          <Link
+            to="/politica-privacidad"
+            className="text-purple-200 hover:text-primary-gold text-sm transition"
+          >
+            Habeas Data
+          </Link>
+          <p className="text-purple-300 text-xs leading-relaxed mt-1">
+            Ley 1581 de 2012<br />
+            Protección de datos personales
+          </p>
         </div>
 
         {/* Columna 3 – Horario */}

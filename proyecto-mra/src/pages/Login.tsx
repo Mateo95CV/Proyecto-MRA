@@ -91,6 +91,13 @@ const handleReset = async (e: React.FormEvent) => {
             Regístrate aquí
           </Link>
         </p>
+        <p className="text-center mt-3 text-xs text-gray-400">
+          Al iniciar sesión aceptas nuestra{' '}
+          <Link to="/politica-privacidad" className="text-primary-purple hover:underline">
+            Política de Privacidad y Habeas Data
+          </Link>
+          .
+        </p>
         <button
           type="button"
           onClick={() => { setShowReset(true); setError(''); }}
