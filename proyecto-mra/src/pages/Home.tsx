@@ -1,7 +1,7 @@
 // Practicamente el index
 import { useState, useEffect, useRef } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { ChevronLeft, ChevronRight, Star, Shield, Truck, Headphones, Eye } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Star, Shield, Truck, Headphones, Eye, Calendar, Stethoscope, Glasses, Package, ScanFace } from 'lucide-react';
 import ProductCard from '../components/ProductCard';
 import { useProducts } from '../hooks/useProducts';
 import type { Product } from '../types/product';
@@ -28,14 +28,14 @@ const SLIDES = [
     href: '#catalogo',
   },
   {
-    img: 'https://images.unsplash.com/photo-1509695507497-903c140c43b0?auto=format&fit=crop&w=2000&q=80',
+    img: 'https://i.ibb.co/PGRpKhQP/Img-MRA3.png',
     title: 'Nuevas Monturas 2025',
     subtitle: 'Diseños exclusivos para cada personalidad y estilo de vida',
     cta: 'Descubrir',
     href: '#catalogo',
   },
   {
-    img: 'https://images.unsplash.com/photo-1508296695146-257a814070b4?auto=format&fit=crop&w=2000&q=80',
+    img: 'https://i.ibb.co/cK4zXxyJ/Img-MRA.jpg',
     title: 'Lentes de Contacto',
     subtitle: 'Comodidad y claridad visual para todo el día',
     cta: 'Ver lentes',
@@ -140,13 +140,20 @@ const BenefitsSection = () => (
 
 // Banner Citas
 
+const CITA_FEATURES = [
+  { icon: Eye,         label: 'Examen visual' },
+  { icon: Stethoscope, label: 'Lentes de contacto' },
+  { icon: Glasses,     label: 'Asesoría de monturas' },
+  { icon: Package,     label: 'Recogida de pedido' },
+];
+
 const CitasBanner = () => (
   <section className="py-16 px-6 bg-white">
     <div className="max-w-5xl mx-auto">
       <div className="bg-gradient-to-br from-primary-purple to-purple-900 rounded-3xl p-8 md:p-12 flex flex-col md:flex-row items-center gap-8 shadow-2xl">
         <div className="flex flex-col items-center md:items-start text-center md:text-left flex-1 gap-4">
           <div className="flex items-center gap-3">
-            <span className="text-4xl">📅</span>
+            <Calendar className="text-white" />
             <span className="bg-primary-gold/20 text-primary-gold text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Agendamiento online</span>
           </div>
           <h2 className="text-3xl md:text-4xl font-bold text-white leading-tight">
@@ -155,9 +162,12 @@ const CitasBanner = () => (
           <p className="text-purple-200 text-lg">
             Examen visual, adaptación de lentes, recogida de pedido o asesoría de monturas. Sin filas, sin esperas.
           </p>
-          <div className="flex flex-wrap gap-3 mt-1">
-            {['👁️ Examen visual','🔬 Lentes de contacto','🕶️ Asesoría de monturas','📦 Recogida de pedido'].map(s => (
-              <span key={s} className="bg-white/10 text-purple-100 text-xs px-3 py-1.5 rounded-full">{s}</span>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-6">
+            {CITA_FEATURES.map(({ icon: Icon, label }) => (
+              <div key={label} className="flex items-center gap-3 bg-white/10 rounded-2xl px-4 py-3 text-sm text-purple-100">
+                <Icon size={20} className="text-primary-gold" />
+                <span>{label}</span>
+              </div>
             ))}
           </div>
         </div>
@@ -177,7 +187,7 @@ const CitasBanner = () => (
 const VisagismoBanner = () => (
   <section className="py-16 px-6 bg-primary-purple">
     <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center gap-8 text-center md:text-left">
-      <div className="text-6xl">🕶️</div>
+      <ScanFace className='text-white'/>
       <div className="flex-1">
         <h2 className="text-3xl md:text-4xl font-bold text-white mb-3">
           ¿No sabes qué forma de gafa te queda?

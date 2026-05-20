@@ -2,11 +2,12 @@ import { useAuth } from '../hooks/useAuth';
 import { useOrders } from '../context/OrderContext';
 import {
   Package, Calendar, Loader2, LogOut, LayoutDashboard,
-  Shield, Pencil, X, Check, Phone, MapPin, User,
+  Shield, Pencil, X, Check, Phone, MapPin, User, KeyRound, Eye, EyeOff,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
 import LogoutModal from '../components/LogoutModal';
+import { supabase } from '../lib/supabaseClient';
 
 const STATUS_COLORS: Record<string, string> = {
   Pendiente:  'bg-yellow-100 text-yellow-800',
@@ -26,6 +27,50 @@ const Perfil = () => {
   const [saveMsg, setSaveMsg]   = useState<{ type: 'ok' | 'err'; text: string } | null>(null);
   const [form, setForm] = useState({ name: '', phone: '', address: '' });
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
+
+  // ── Estado cambio de contraseña ────────────────────────────────
+  const [showPwSection, setShowPwSection] = useState(false);
+  const [pwForm, setPwForm]     = useState({ current: '', next: '', confirm: '' });
+  const [pwErrors, setPwErrors] = useState<Record<string, string>>({});
+  const [pwSaving, setPwSaving] = useState(false);
+  const [pwMsg, setPwMsg]       = useState<{ type: 'ok' | 'err'; text: string } | null>(null);
+  const [showPw, setShowPw]     = useState({ current: false, next: false, confirm: false });
+
+  const validatePw = () => {
+    const e: Record<string, string> = {};
+    if (!pwForm.current.trim())          e.current = 'Ingresa tu contraseña actual';
+    if (pwForm.next.length < 6)          e.next    = 'Mínimo 6 caracteres';
+    if (pwForm.next !== pwForm.confirm)  e.confirm = 'Las contraseñas no coinciden';
+    setPwErrors(e);
+    return Object.keys(e).length === 0;
+  };
+
+  const handleChangePassword = async () => {
+    if (!validatePw()) return;
+    setPwSaving(true);
+    setPwMsg(null);
+    try {
+      // 1. Verificar contraseña actual re-autenticando
+      const { error: signInErr } = await supabase.auth.signInWithPassword({
+        email: user!.email,
+        password: pwForm.current,
+      });
+      if (signInErr) {
+        setPwErrors({ current: 'Contraseña actual incorrecta' });
+        return;
+      }
+      // 2. Actualizar a la nueva contraseña
+      const { error: updateErr } = await supabase.auth.updateUser({ password: pwForm.next });
+      if (updateErr) throw updateErr;
+      setPwMsg({ type: 'ok', text: '¡Contraseña actualizada correctamente!' });
+      setPwForm({ current: '', next: '', confirm: '' });
+      setShowPwSection(false);
+    } catch {
+      setPwMsg({ type: 'err', text: 'Error al actualizar. Intenta de nuevo.' });
+    } finally {
+      setPwSaving(false);
+    }
+  };
 
   const openEdit = () => {
     setForm({
@@ -238,6 +283,181 @@ const Perfil = () => {
                   {saving
                     ? <><Loader2 size={16} className="animate-spin" /> Guardando...</>
                     : <><Check size={16} /> Guardar cambios</>
+                  }
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* ── Cambio de contraseña ──────────────────────────────── */}
+        <div className="bg-white rounded-2xl shadow-lg p-8 mb-6">
+          <div className="flex items-center justify-between mb-2 flex-wrap gap-3">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-primary-purple/10 rounded-xl flex items-center justify-center shrink-0">
+                <KeyRound size={20} className="text-primary-purple" />
+              </div>
+              <div>
+                <h2 className="text-lg font-bold text-primary-purple">Cambiar contraseña</h2>
+                <p className="text-xs text-gray-400">Actualiza tu contraseña de acceso</p>
+              </div>
+            </div>
+            {!showPwSection && (
+              <button
+                onClick={() => { setShowPwSection(true); setPwMsg(null); setPwErrors({}); }}
+                className="flex items-center gap-2 border border-primary-purple text-primary-purple hover:bg-primary-purple hover:text-white px-5 py-2.5 rounded-xl font-semibold transition text-sm"
+              >
+                <KeyRound size={16} /> Cambiar contraseña
+              </button>
+            )}
+          </div>
+
+          {/* Mensaje de resultado fuera del formulario */}
+          {pwMsg && !showPwSection && (
+            <div className={`flex items-center gap-2 px-4 py-3 rounded-xl mt-4 text-sm font-medium ${
+              pwMsg.type === 'ok'
+                ? 'bg-green-50 border border-green-200 text-green-700'
+                : 'bg-red-50 border border-red-200 text-red-700'
+            }`}>
+              {pwMsg.type === 'ok' ? <Check size={16} /> : <X size={16} />}
+              {pwMsg.text}
+            </div>
+          )}
+
+          {showPwSection && (
+            <div className="border-t border-gray-100 pt-6 mt-4">
+              <div className="grid sm:grid-cols-3 gap-4 mb-5">
+
+                {/* Contraseña actual */}
+                <div>
+                  <label className="block text-xs font-semibold text-gray-500 mb-1.5">
+                    Contraseña actual *
+                  </label>
+                  <div className="relative">
+                    <input
+                      type={showPw.current ? 'text' : 'password'}
+                      value={pwForm.current}
+                      onChange={e => { setPwForm(p => ({ ...p, current: e.target.value })); setPwErrors(p => ({ ...p, current: '' })); }}
+                      placeholder="Tu contraseña actual"
+                      className={`w-full px-4 py-3 pr-10 border rounded-xl text-sm focus:outline-none focus:border-primary-purple transition ${
+                        pwErrors.current ? 'border-red-400 bg-red-50' : 'border-gray-200'
+                      }`}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPw(p => ({ ...p, current: !p.current }))}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                    >
+                      {showPw.current ? <EyeOff size={16} /> : <Eye size={16} />}
+                    </button>
+                  </div>
+                  {pwErrors.current && <p className="text-red-500 text-xs mt-1">{pwErrors.current}</p>}
+                </div>
+
+                {/* Nueva contraseña */}
+                <div>
+                  <label className="block text-xs font-semibold text-gray-500 mb-1.5">
+                    Nueva contraseña *
+                  </label>
+                  <div className="relative">
+                    <input
+                      type={showPw.next ? 'text' : 'password'}
+                      value={pwForm.next}
+                      onChange={e => { setPwForm(p => ({ ...p, next: e.target.value })); setPwErrors(p => ({ ...p, next: '' })); }}
+                      placeholder="Mínimo 6 caracteres"
+                      className={`w-full px-4 py-3 pr-10 border rounded-xl text-sm focus:outline-none focus:border-primary-purple transition ${
+                        pwErrors.next ? 'border-red-400 bg-red-50' : 'border-gray-200'
+                      }`}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPw(p => ({ ...p, next: !p.next }))}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                    >
+                      {showPw.next ? <EyeOff size={16} /> : <Eye size={16} />}
+                    </button>
+                  </div>
+                  {pwErrors.next && <p className="text-red-500 text-xs mt-1">{pwErrors.next}</p>}
+                </div>
+
+                {/* Confirmar contraseña */}
+                <div>
+                  <label className="block text-xs font-semibold text-gray-500 mb-1.5">
+                    Confirmar contraseña *
+                  </label>
+                  <div className="relative">
+                    <input
+                      type={showPw.confirm ? 'text' : 'password'}
+                      value={pwForm.confirm}
+                      onChange={e => { setPwForm(p => ({ ...p, confirm: e.target.value })); setPwErrors(p => ({ ...p, confirm: '' })); }}
+                      placeholder="Repite la nueva contraseña"
+                      className={`w-full px-4 py-3 pr-10 border rounded-xl text-sm focus:outline-none focus:border-primary-purple transition ${
+                        pwErrors.confirm ? 'border-red-400 bg-red-50' : 'border-gray-200'
+                      }`}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPw(p => ({ ...p, confirm: !p.confirm }))}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                    >
+                      {showPw.confirm ? <EyeOff size={16} /> : <Eye size={16} />}
+                    </button>
+                  </div>
+                  {pwErrors.confirm && <p className="text-red-500 text-xs mt-1">{pwErrors.confirm}</p>}
+                </div>
+              </div>
+
+              {/* Indicador de fortaleza */}
+              {pwForm.next.length > 0 && (
+                <div className="mb-4">
+                  <div className="flex gap-1 mb-1">
+                    {[1,2,3,4].map(i => (
+                      <div key={i} className={`h-1.5 flex-1 rounded-full transition-all ${
+                        pwForm.next.length >= i * 3
+                          ? i <= 1 ? 'bg-red-400'
+                          : i <= 2 ? 'bg-yellow-400'
+                          : i <= 3 ? 'bg-blue-400'
+                          : 'bg-green-500'
+                          : 'bg-gray-200'
+                      }`} />
+                    ))}
+                  </div>
+                  <p className="text-xs text-gray-400">
+                    {pwForm.next.length < 6  ? 'Muy corta'
+                    : pwForm.next.length < 9  ? 'Aceptable'
+                    : pwForm.next.length < 12 ? 'Buena'
+                    : 'Muy segura'}
+                  </p>
+                </div>
+              )}
+
+              {pwMsg && (
+                <div className={`flex items-center gap-2 px-4 py-3 rounded-xl mb-4 text-sm font-medium ${
+                  pwMsg.type === 'ok'
+                    ? 'bg-green-50 border border-green-200 text-green-700'
+                    : 'bg-red-50 border border-red-200 text-red-700'
+                }`}>
+                  {pwMsg.type === 'ok' ? <Check size={16} /> : <X size={16} />}
+                  {pwMsg.text}
+                </div>
+              )}
+
+              <div className="flex gap-3">
+                <button
+                  onClick={() => { setShowPwSection(false); setPwForm({ current: '', next: '', confirm: '' }); setPwErrors({}); setPwMsg(null); }}
+                  disabled={pwSaving}
+                  className="flex items-center gap-2 px-5 py-2.5 rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 font-semibold text-sm transition"
+                >
+                  <X size={16} /> Cancelar
+                </button>
+                <button
+                  onClick={handleChangePassword}
+                  disabled={pwSaving}
+                  className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-primary-purple hover:bg-purple-900 disabled:bg-gray-300 text-white font-semibold text-sm transition"
+                >
+                  {pwSaving
+                    ? <><Loader2 size={16} className="animate-spin" /> Actualizando...</>
+                    : <><KeyRound size={16} /> Actualizar contraseña</>
                   }
                 </button>
               </div>
