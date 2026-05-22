@@ -58,11 +58,11 @@ function AppContent() {
         <Route element={<ProtectedRoute isPublic redirectTo="/" />}>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/reset-password" element={<ResetPassword />} />
         </Route>
 
         {/* Rutas principales (públicas) */}
         <Route path="/" element={<Home />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/politica-privacidad" element={<PoliticaPrivacidad />} />
         <Route path="/citas" element={<Citas />} />          
         <Route path="/monturas" element={<Monturas />} />

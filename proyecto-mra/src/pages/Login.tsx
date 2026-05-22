@@ -27,7 +27,9 @@ const handleReset = async (e: React.FormEvent) => {
     if (error) throw error;
     setResetMsg('Revisa tu correo, te enviamos el enlace de recuperación.');
   } catch (err: any) {
-    setError('No se pudo enviar el correo. Verifica la dirección.');
+    // Mostrar el error 429 de supabase cuando se envían muchos correos en poco tiempo
+    if (err.status === 429) setError('Has enviado demasiados correos. Intenta de nuevo más tarde.');
+    else setError('No se pudo enviar el correo. Verifica la dirección.');
   } finally {
     setLoading(false);
   }
