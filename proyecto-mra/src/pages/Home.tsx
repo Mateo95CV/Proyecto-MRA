@@ -21,7 +21,7 @@ const CATEGORIES: { label: string; value: CategoryFilter; }[] = [
 
 const SLIDES = [
   {
-    img: 'https://i.ibb.co/8LHt3dyQ/img-ppal-MRA.png',
+    img: 'https://i.ibb.co/Rrzn4fW/img-Yeison1.png',
     title: 'Óptica MRA',
     subtitle: 'Tu visión, nuestra pasión desde Rionegro, Antioquia',
     cta: 'Ver Colección',

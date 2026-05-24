@@ -105,10 +105,10 @@ const AdminProducts = () => {
 
       if (mode === 'edit' && editingId) {
         await updateProduct(editingId, payload);
-        toast.success('Producto actualizado ✅');
+        toast.success('Producto actualizado');
       } else {
         await createProduct(payload);
-        toast.success('Producto creado ✅');
+        toast.success('Producto creado');
       }
 
       closeForm();
