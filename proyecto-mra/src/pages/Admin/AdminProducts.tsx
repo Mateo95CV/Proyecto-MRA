@@ -1,6 +1,6 @@
 // src/pages/Admin/AdminProducts.tsx
 import AdminLayout from '../../components/Admin/AdminLayout';
-import { Plus, Edit, Trash2, Loader2, X, Save } from 'lucide-react';
+import { Plus, Edit, Trash2, Loader2, X, Save, AlertTriangle } from 'lucide-react';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 import AdminProductImgUpload from '../../components/Admin/AdminProductImgUpload';
@@ -23,7 +23,7 @@ interface FormState {
   category: string;
   description: string;
   imageFile: File | null;
-  image_url: string;       // imagen actual (para edición)
+  image_url: string;
 }
 
 const EMPTY_FORM: FormState = {
@@ -44,7 +44,47 @@ function productToForm(p: Product): FormState {
   };
 }
 
-// ────────────────────────────────────────────────────
+// ── Toast de confirmación personalizado ──────────────
+const confirmDeleteToast = (name: string): Promise<boolean> =>
+  new Promise(resolve => {
+    toast.custom(
+      t => (
+        <div className={`bg-white rounded-2xl shadow-2xl border border-red-100 p-5 w-80 transition-all ${
+          t.visible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2'
+        }`}>
+          <div className="flex items-start gap-3 mb-4">
+            <div className="w-10 h-10 bg-red-100 rounded-xl flex items-center justify-center shrink-0">
+              <AlertTriangle size={20} className="text-red-500" />
+            </div>
+            <div>
+              <p className="font-bold text-gray-800 text-sm">¿Eliminar producto?</p>
+              <p className="text-gray-500 text-xs mt-1 leading-relaxed">
+                Estás a punto de eliminar{' '}
+                <span className="font-semibold text-gray-700">"{name}"</span>.
+                Esta acción no se puede deshacer.
+              </p>
+            </div>
+          </div>
+          <div className="flex gap-2">
+            <button
+              onClick={() => { toast.dismiss(t.id); resolve(false); }}
+              className="flex-1 py-2 rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 font-semibold text-sm transition"
+            >
+              Cancelar
+            </button>
+            <button
+              onClick={() => { toast.dismiss(t.id); resolve(true); }}
+              className="flex-1 py-2 rounded-xl bg-red-500 hover:bg-red-600 text-white font-semibold text-sm transition"
+            >
+              Sí, eliminar
+            </button>
+          </div>
+        </div>
+      ),
+      { duration: Infinity, position: 'top-center' }
+    );
+  });
+
 const AdminProducts = () => {
   const { products, loading, error, refetch } = useProducts();
 
@@ -53,7 +93,6 @@ const AdminProducts = () => {
   const [saving,    setSaving]    = useState(false);
   const [formData,  setFormData]  = useState<FormState>(EMPTY_FORM);
 
-  // ── Abrir formulario de creación ──────────────────
   const openCreate = () => {
     setFormData(EMPTY_FORM);
     setEditingId(null);
@@ -61,7 +100,6 @@ const AdminProducts = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  // ── Abrir formulario de edición ───────────────────
   const openEdit = (product: Product) => {
     setFormData(productToForm(product));
     setEditingId(product.id);
@@ -75,7 +113,6 @@ const AdminProducts = () => {
     setFormData(EMPTY_FORM);
   };
 
-  // ── Guardar (crear o editar) ───────────────────────
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.name || !formData.price) {
@@ -85,7 +122,6 @@ const AdminProducts = () => {
 
     setSaving(true);
     try {
-      // Si se seleccionó nueva imagen, subirla
       let image_url = formData.image_url;
       if (formData.imageFile) {
         image_url = await uploadProductImage(formData.imageFile);
@@ -120,19 +156,19 @@ const AdminProducts = () => {
     }
   };
 
-  // ── Eliminar ──────────────────────────────────────
+  // ── Eliminar con toast de confirmación ────────────
   const handleDelete = async (id: string, name: string) => {
-    if (!confirm(`¿Eliminar "${name}"? Esta acción no se puede deshacer.`)) return;
+    const confirmed = await confirmDeleteToast(name);
+    if (!confirmed) return;
     try {
       await deleteProduct(id);
-      toast.success('Producto eliminado');
+      toast.success(`"${name}" eliminado correctamente`);
       refetch();
     } catch (err) {
       toast.error(`Error al eliminar: ${(err as Error).message}`);
     }
   };
 
-  // ── Render ────────────────────────────────────────
   return (
     <AdminLayout>
       {/* Header */}
@@ -156,16 +192,12 @@ const AdminProducts = () => {
             <h2 className="text-2xl font-bold text-primary-purple">
               {mode === 'edit' ? 'Editar Producto' : 'Nuevo Producto'}
             </h2>
-            <button
-              onClick={closeForm}
-              className="text-gray-400 hover:text-gray-600 transition"
-            >
+            <button onClick={closeForm} className="text-gray-400 hover:text-gray-600 transition">
               <X size={24} />
             </button>
           </div>
 
           <form onSubmit={handleSave} className="grid grid-cols-1 md:grid-cols-2 gap-6">
-
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Nombre *</label>
               <input
@@ -236,12 +268,9 @@ const AdminProducts = () => {
               />
             </div>
 
-            {/* Preview imagen actual en modo edición */}
             {mode === 'edit' && formData.image_url && !formData.imageFile && (
               <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Imagen actual
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Imagen actual</label>
                 <img
                   src={formData.image_url}
                   alt="Imagen actual"
