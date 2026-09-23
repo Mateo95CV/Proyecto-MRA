@@ -1,0 +1,47 @@
+@import "tailwindcss";
+
+@theme {
+  /* Marca (fachada y logo) */
+  --color-primary-purple: #6B21A8;
+  --color-primary-gold:   #D4AF37;
+  --color-neutral-light:  #F6F4F8;
+
+  /* Apoyo */
+  --color-plum:      #2A1238; /* fondos oscuros, en lugar de negro */
+  --color-ink:       #231530; /* texto principal */
+  --color-gold-deep: #8A6A12; /* dorado legible sobre fondo claro */
+  --color-line:      #E7E1EE; /* bordes y divisores */
+
+  --font-display: "Cormorant Garamond", Georgia, serif;
+  --font-sans:    "Manrope", system-ui, sans-serif;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  color: var(--color-ink);
+  background-color: var(--color-neutral-light);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, .font-display {
+  font-family: var(--font-display);
+  letter-spacing: -0.01em;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-primary-gold);
+  outline-offset: 2px;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
