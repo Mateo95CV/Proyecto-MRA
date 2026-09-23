@@ -1,8 +1,11 @@
 import { useState } from 'react';
-import { ArrowRight, RefreshCw, Shield, Check, X } from 'lucide-react';
+import { ArrowRight, RefreshCw, Shield, Check, X, Camera, ScanFace } from 'lucide-react';
 import { Link, useSearchParams } from 'react-router-dom';
 import FaceShapeIcon from '../components/FaceShapeIcon';
 import ProductCard from '../components/ProductCard';
+import FaceScanner from '../components/FaceScanner';
+import CalibrationPanel from '../components/CalibrationPanel';
+import type { Classification, FaceMetrics } from '../lib/faceShape';
 import { useProducts } from '../hooks/useProducts';
 import {
   FACE_SHAPES,
@@ -20,20 +23,34 @@ const Visagismo = () => {
   // El resultado confirmado vive en la URL (?rostro=oval) para poder compartirlo o llegar desde el Home
   const confirmed = isFaceShape(rostroParam) ? rostroParam : null;
   const [selected, setSelected] = useState<FaceShape | null>(confirmed);
+  const [scannerOpen, setScannerOpen] = useState(false);
+  const [detected, setDetected] = useState<{ result: Classification; metrics: FaceMetrics } | null>(null);
+  const calibrating = searchParams.get('calibrar') === '1';
 
   const { products, loading } = useProducts();
 
   const handleConfirm = () => {
     if (selected) {
-      setSearchParams({ rostro: selected });
+      setSearchParams(calibrating ? { rostro: selected, calibrar: '1' } : { rostro: selected });
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
 
   const handleReset = () => {
     setSelected(null);
-    setSearchParams({});
+    setDetected(null);
+    setSearchParams(calibrating ? { calibrar: '1' } : {});
   };
+
+  const handleDetected = (result: Classification, metrics: FaceMetrics) => {
+    setDetected({ result, metrics });
+    setSelected(result.shape);
+    setScannerOpen(false);
+  };
+
+  const shapeLabel = (id: FaceShape) => FACE_SHAPES.find(s => s.id === id)!.label.toLowerCase();
+  const detectedLabel = detected ? shapeLabel(detected.result.shape) : '';
+  const alternativeLabel = detected?.result.alternative ? shapeLabel(detected.result.alternative) : '';
 
   const shapeData = confirmed ? FACE_SHAPES.find(s => s.id === confirmed)! : null;
   const rec = confirmed ? RECOMMENDATIONS[confirmed] : null;
@@ -49,7 +66,7 @@ const Visagismo = () => {
           <h1 className="text-5xl md:text-6xl font-semibold">Visagismo</h1>
           <p className="text-ink/65 text-lg mt-3 max-w-2xl">
             La forma de tu rostro dice mucho sobre la montura que mejor te queda.
-            Elige la tuya y te mostramos qué buscar y qué evitar.
+            Detéctala con tu cámara o elígela tú, y te mostramos qué buscar y qué evitar.
           </p>
           <p className="flex items-start gap-2 mt-5 text-sm text-ink/60">
             <Shield size={16} className="shrink-0 mt-0.5 text-primary-purple" />
@@ -66,8 +83,80 @@ const Visagismo = () => {
       <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10">
         {!confirmed ? (
           <>
+            {/* Detección automática */}
+            <div className="mb-10">
+              {scannerOpen ? (
+                <FaceScanner onDetected={handleDetected} onClose={() => setScannerOpen(false)} />
+              ) : detected ? (
+                <div className="rounded-3xl bg-plum text-white p-6 sm:p-8">
+                  <p className="text-primary-gold text-sm font-semibold flex items-center gap-2">
+                    <ScanFace size={18} /> Resultado de la cámara
+                  </p>
+                  <h2 className="text-3xl sm:text-4xl font-semibold mt-2">
+                    Tu rostro parece {detectedLabel}
+                  </h2>
+                  <p className="text-white/70 mt-3 max-w-xl text-sm leading-relaxed">
+                    {alternativeLabel && <>También podría ser {alternativeLabel}: tus medidas están entre las dos. </>}
+                    Es una estimación a partir de tus proporciones. Compárala con lo que ves en el
+                    espejo: si no te convence, elige otra forma abajo.
+                  </p>
+                  <div className="mt-6 flex flex-wrap gap-3">
+                    <button
+                      onClick={handleConfirm}
+                      className="inline-flex items-center gap-2 bg-primary-gold hover:bg-white text-plum px-6 py-3 rounded-full font-semibold transition"
+                    >
+                      Ver mi recomendación <ArrowRight size={18} />
+                    </button>
+                    <button
+                      onClick={() => setScannerOpen(true)}
+                      className="inline-flex items-center gap-2 border border-white/30 hover:border-white px-6 py-3 rounded-full font-semibold transition"
+                    >
+                      <RefreshCw size={16} /> Medir de nuevo
+                    </button>
+                  </div>
+                  <details className="mt-6 text-xs text-white/60">
+                    <summary className="cursor-pointer hover:text-white/80">Ver medidas</summary>
+                    <dl className="mt-3 grid grid-cols-2 sm:grid-cols-4 gap-3 tabular-nums">
+                      {[
+                        ['Largo / ancho', detected.metrics.lengthRatio],
+                        ['Frente / pómulos', detected.metrics.foreheadRatio],
+                        ['Mandíbula / pómulos', detected.metrics.jawRatio],
+                        ['Barbilla / pómulos', detected.metrics.chinRatio],
+                      ].map(([label, value]) => (
+                        <div key={label as string}>
+                          <dt>{label}</dt>
+                          <dd className="text-white text-sm font-semibold">{(value as number).toFixed(2)}</dd>
+                        </div>
+                      ))}
+                    </dl>
+                  </details>
+                </div>
+              ) : (
+                <div className="rounded-3xl border border-line p-6 sm:p-8 flex flex-col sm:flex-row sm:items-center justify-between gap-5">
+                  <div>
+                    <h2 className="text-3xl font-semibold">Detecta tu forma con la cámara</h2>
+                    <p className="text-ink/60 text-sm mt-2 max-w-md">
+                      Mira a la cámara unos segundos y medimos las proporciones de tu rostro.
+                      Todo se procesa en tu dispositivo.
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => setScannerOpen(true)}
+                    className="shrink-0 inline-flex items-center justify-center gap-2 bg-primary-purple hover:bg-plum text-white px-6 py-3 rounded-full font-semibold transition"
+                  >
+                    <Camera size={18} /> Usar la cámara
+                  </button>
+                </div>
+              )}
+              {calibrating && detected && !scannerOpen && (
+                <CalibrationPanel result={detected.result} metrics={detected.metrics} />
+              )}
+            </div>
+
             <fieldset>
-              <legend className="font-display text-3xl font-semibold mb-1">¿Cuál es la forma de tu rostro?</legend>
+              <legend className="font-display text-3xl font-semibold mb-1">
+                {detected ? '¿Quieres elegir otra forma?' : 'O elige la forma de tu rostro'}
+              </legend>
               <p className="text-ink/60 text-sm mb-6">
                 Selecciona la opción que más se parezca a la forma general de tu cara.
               </p>

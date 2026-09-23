@@ -11,6 +11,7 @@
     "lint": "eslint --fix . --ext .js,.jsx,.tsx"
   },
   "dependencies": {
+    "@mediapipe/tasks-vision": "^1.0.1",
     "@supabase/auth-helpers-react": "^0.15.0",
     "@supabase/supabase-js": "^2.100.0",
     "@tailwindcss/postcss": "^4.2.1",

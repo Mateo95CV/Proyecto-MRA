@@ -30,15 +30,14 @@ export interface Order {
   order_items?: OrderItem[];
 }
 
+// El precio y el total NO se envían: la base de datos los calcula con los precios reales
 export interface NewOrderPayload {
-  items: { product_id: string; name: string; brand: string; price: number; quantity: number; image_url: string }[];
-  total: number;
+  items: { product_id: string; quantity: number }[];
   shipping_name: string;
   shipping_address: string;
   shipping_city: string;
   shipping_phone: string;
   payment_method: string;
-  payment_ref?: string;
 }
 
 interface OrderContextType {
@@ -77,41 +76,19 @@ export const OrderProvider = ({ children }: { children: ReactNode }) => {
   const addOrder = async (payload: NewOrderPayload): Promise<Order> => {
     if (!session?.user) throw new Error('Debes iniciar sesión para hacer un pedido');
 
-    // 1. Insertar pedido
-    const { data: order, error: orderError } = await supabase
-      .from('orders')
-      .insert([{
-        user_id:          session.user.id,
-        total:            payload.total,
-        shipping_name:    payload.shipping_name,
-        shipping_address: payload.shipping_address,
-        shipping_city:    payload.shipping_city,
-        shipping_phone:   payload.shipping_phone,
-        payment_method:   payload.payment_method,
-        payment_ref:      payload.payment_ref,
-      }])
-      .select()
-      .maybeSingle();
+    // create_order crea el pedido y sus items en una transacción, valida stock
+    // y toma precios de la tabla products (ver supabase/migrations/20260923_pedidos_precios_servidor.sql)
+    const { data: order, error } = await supabase.rpc('create_order', {
+      p_items:            payload.items,
+      p_shipping_name:    payload.shipping_name,
+      p_shipping_address: payload.shipping_address,
+      p_shipping_city:    payload.shipping_city,
+      p_shipping_phone:   payload.shipping_phone,
+      p_payment_method:   payload.payment_method,
+    });
 
-    if (orderError) throw orderError;
+    if (error) throw error;
     if (!order) throw new Error('No se pudo crear el pedido');
-
-    // 2. Insertar items
-    const itemsToInsert = payload.items.map(item => ({
-      order_id:   order.id,
-      product_id: item.product_id,
-      name:       item.name,
-      brand:      item.brand,
-      price:      item.price,
-      quantity:   item.quantity,
-      image_url:  item.image_url,
-    }));
-
-    const { error: itemsError } = await supabase
-      .from('order_items')
-      .insert(itemsToInsert);
-
-    if (itemsError) throw itemsError;
 
     setTick(t => t + 1);
     return order as Order;

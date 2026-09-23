@@ -50,15 +50,7 @@ const Checkout = () => {
     setSaving(true);
     try {
       const order = await addOrder({
-        items: cart.map(i => ({
-          product_id: i.product.id,
-          name:       i.product.name,
-          brand:      i.product.brand,
-          price:      i.product.price,
-          quantity:   i.quantity,
-          image_url:  i.product.image_url,
-        })),
-        total,
+        items: cart.map(i => ({ product_id: i.product.id, quantity: i.quantity })),
         shipping_name:    formData.nombre,
         shipping_address: `${formData.direccion}, ${formData.ciudad}, ${formData.departamento}`,
         shipping_city:    formData.ciudad,
@@ -66,9 +58,14 @@ const Checkout = () => {
         payment_method:   formData.metodoPago,
       });
 
+      // El total real lo calcula la base de datos; avisa si algún precio cambió desde que se agregó al carrito
+      const finalTotal = Number(order.total);
+      if (finalTotal !== total) {
+        toast(`Algún precio se actualizó. Total final: $${finalTotal.toLocaleString('es-CO')}`, { duration: 7000 });
+      }
       clearCart();
       toast.success('¡Pedido confirmado!', { duration: 5000 });
-      navigate('/confirmacion', { state: { orderId: order.id, purchasedItems: cart, total } });
+      navigate('/confirmacion', { state: { orderId: order.id, purchasedItems: cart, total: finalTotal } });
     } catch (err: any) {
       toast.error(`Error al procesar: ${err.message}`);
     } finally {

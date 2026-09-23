@@ -88,11 +88,12 @@ const PoliticaPrivacidad = () => {
               <strong>Citas:</strong> nombre, contacto y fecha/hora de la cita agendada.
             </li>
             <li>
-              <strong>Visagismo virtual:</strong> la herramienta de análisis facial opera
-              completamente en su dispositivo. <strong>No capturamos, almacenamos ni
-              transmitimos ninguna foto ni imagen de su rostro.</strong> Cuando en el futuro
-              se habilite la cámara, el procesamiento seguirá siendo local y sin retención
-              de imágenes.
+              <strong>Visagismo virtual:</strong> si usted lo autoriza, la herramienta usa la
+              cámara de forma temporal para medir las proporciones de su rostro. El análisis
+              ocurre completamente en su dispositivo. <strong>No capturamos, almacenamos ni
+              transmitimos ninguna foto, imagen ni medida de su rostro</strong>, y la cámara
+              se apaga al terminar la medición. Solo se descarga a su navegador el modelo de
+              detección (MediaPipe, de Google); ningún dato suyo se envía a terceros.
             </li>
           </ul>
         </Section>

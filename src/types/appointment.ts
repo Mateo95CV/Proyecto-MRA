@@ -38,15 +38,13 @@ export const STATUS_LABELS: Record<AppointmentStatus, string> = {
 
 export async function createAppointment(
   data: Omit<Appointment, 'id' | 'status' | 'created_at'>
-): Promise<Appointment> {
-  const { data: result, error } = await supabase
+): Promise<void> {
+  // Sin .select(): los clientes pueden crear citas pero solo el admin puede leerlas,
+  // así que pedir la fila de vuelta haría fallar la inserción por RLS.
+  const { error } = await supabase
     .from('appointments')
-    .insert([{ ...data, status: 'pendiente' }])
-    .select()
-    .maybeSingle();
+    .insert([{ ...data, status: 'pendiente' }]);
   if (error) throw error;
-  if (!result) throw new Error('No se pudo crear la cita.');
-  return result as Appointment;
 }
 
 export async function getAllAppointments(): Promise<Appointment[]> {
